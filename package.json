@@ -12,7 +12,8 @@
     "dev": "npm run dev:ingestion & npm run dev:persistence",
     "mock": "npx tsx scripts/mock-sensor.ts",
     "db:migrate": "npm run db:migrate --workspace=services/persistence",
-    "db:generate": "npm run db:generate --workspace=services/persistence"
+    "db:generate": "npm run db:generate --workspace=services/persistence",
+    "db:studio": "npm run db:studio --workspace=services/persistence"
   },
   "devDependencies": {
     "@types/node": "^22.0.0",
