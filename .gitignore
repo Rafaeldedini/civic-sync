@@ -1,0 +1,12 @@
+# Dependências
+node_modules/
+
+# Build
+dist/
+
+# Variáveis de ambiente (nunca subir!)
+.env
+**/.env
+
+# macOS
+.DS_Store

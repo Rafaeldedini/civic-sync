@@ -1,0 +1,26 @@
+{
+  "name": "@civic-sync/ingestion",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch src/server.ts",
+    "build": "tsc --project tsconfig.json",
+    "start": "node dist/server.js"
+  },
+  "dependencies": {
+    "@civic-sync/types": "*",
+    "@fastify/cors": "^10.0.0",
+    "bullmq": "^5.34.0",
+    "fastify": "^5.2.0",
+    "fastify-type-provider-zod": "^4.0.0",
+    "ioredis": "^5.4.0",
+    "pino-pretty": "^13.0.0",
+    "zod": "^3.23.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "tsx": "^4.19.0",
+    "typescript": "^5.7.0"
+  }
+}

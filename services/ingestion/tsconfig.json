@@ -1,0 +1,10 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "outDir": "./dist",
+    "paths": {
+      "@civic-sync/types": ["../../shared/types/src/index.ts"]
+    }
+  },
+  "include": ["src/**/*"]
+}

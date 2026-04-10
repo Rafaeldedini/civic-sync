@@ -1,0 +1,22 @@
+{
+  "name": "civic-sync",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": [
+    "shared/*",
+    "services/*"
+  ],
+  "scripts": {
+    "dev:ingestion": "npm run dev --workspace=services/ingestion",
+    "dev:persistence": "npm run dev --workspace=services/persistence",
+    "dev": "npm run dev:ingestion & npm run dev:persistence",
+    "mock": "npx tsx scripts/mock-sensor.ts",
+    "db:migrate": "npm run db:migrate --workspace=services/persistence",
+    "db:generate": "npm run db:generate --workspace=services/persistence"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "tsx": "^4.19.0",
+    "typescript": "^5.7.0"
+  }
+}
