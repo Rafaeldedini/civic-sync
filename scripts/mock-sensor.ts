@@ -42,10 +42,10 @@ const SENSOR_IDS = [
 // ─── Sensor type definitions ──────────────────────────────────────────────────
 
 type SensorType =
-  | 'river_level'
-  | 'soil_moisture'
-  | 'slope_displacement'
-  | 'forest_temperature';
+  | 'nivel_rio'
+  | 'umidade_solo'
+  | 'desclocamento_encosta'
+  | 'temperatura_floresta';
 
 interface SensorSpec {
   unit: string;
@@ -54,10 +54,10 @@ interface SensorSpec {
 }
 
 const SENSOR_SPECS: Record<SensorType, SensorSpec> = {
-  river_level: { unit: 'm', min: 0.5, max: 15.0 },
-  soil_moisture: { unit: '%', min: 10, max: 95 },
-  slope_displacement: { unit: 'mm', min: 0, max: 50 },
-  forest_temperature: { unit: '°C', min: 15, max: 65 },
+  nivel_rio: { unit: 'm', min: 0.5, max: 15.0 },
+  umidade_solo: { unit: '%', min: 10, max: 95 },
+  desclocamento_encosta: { unit: 'mm', min: 0, max: 50 },
+  temperatura_floresta: { unit: '°C', min: 15, max: 65 },
 };
 
 const SENSOR_TYPES = Object.keys(SENSOR_SPECS) as SensorType[];
@@ -96,10 +96,10 @@ const YELLOW = '\x1b[33m';
 const RESET = '\x1b[0m';
 
 const TYPE_COLORS: Record<SensorType, string> = {
-  river_level: '\x1b[34m',          // blue
-  soil_moisture: '\x1b[32m',        // green
-  slope_displacement: '\x1b[35m',   // magenta
-  forest_temperature: '\x1b[33m',   // yellow
+  nivel_rio: '\x1b[34m',          // blue
+  umidade_solo: '\x1b[32m',        // green
+  desclocamento_encosta: '\x1b[35m',   // magenta
+  temperatura_floresta: '\x1b[33m',   // yellow
 };
 
 // ─── Main loop ────────────────────────────────────────────────────────────────

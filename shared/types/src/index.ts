@@ -3,10 +3,10 @@ import { z } from 'zod';
 // ─── Sensor Type Enum ────────────────────────────────────────────────────────
 
 export const SensorTypeEnum = z.enum([
-  'river_level',
-  'soil_moisture',
-  'slope_displacement',
-  'forest_temperature',
+  'nivel_rio',
+  'umidade_solo',
+  'desclocamento_encosta',
+  'temperatura_floresta',
 ]);
 
 export type SensorType = z.infer<typeof SensorTypeEnum>;
