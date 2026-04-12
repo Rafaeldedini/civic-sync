@@ -24,10 +24,10 @@ export async function sensorRoutes(app: FastifyInstance): Promise<void> {
     },
     async () => {
       const types = [
-        'river_level',
-        'soil_moisture',
-        'slope_displacement',
-        'forest_temperature',
+        'nivel_rio',
+        'umidade_solo',
+        'deslocamento_encosta',
+        'temperatura_floresta',
       ];
       return { types };
     },

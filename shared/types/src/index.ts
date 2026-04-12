@@ -5,7 +5,7 @@ import { z } from 'zod';
 export const SensorTypeEnum = z.enum([
   'nivel_rio',
   'umidade_solo',
-  'desclocamento_encosta',
+  'deslocamento_encosta',
   'temperatura_floresta',
 ]);
 

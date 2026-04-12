@@ -44,7 +44,7 @@ const SENSOR_IDS = [
 type SensorType =
   | 'nivel_rio'
   | 'umidade_solo'
-  | 'desclocamento_encosta'
+  | 'deslocamento_encosta'
   | 'temperatura_floresta';
 
 interface SensorSpec {
@@ -56,7 +56,7 @@ interface SensorSpec {
 const SENSOR_SPECS: Record<SensorType, SensorSpec> = {
   nivel_rio: { unit: 'm', min: 0.5, max: 15.0 },
   umidade_solo: { unit: '%', min: 10, max: 95 },
-  desclocamento_encosta: { unit: 'mm', min: 0, max: 50 },
+  deslocamento_encosta: { unit: 'mm', min: 0, max: 50 },
   temperatura_floresta: { unit: '°C', min: 15, max: 65 },
 };
 
@@ -98,7 +98,7 @@ const RESET = '\x1b[0m';
 const TYPE_COLORS: Record<SensorType, string> = {
   nivel_rio: '\x1b[34m',          // blue
   umidade_solo: '\x1b[32m',        // green
-  desclocamento_encosta: '\x1b[35m',   // magenta
+  deslocamento_encosta: '\x1b[35m',   // magenta
   temperatura_floresta: '\x1b[33m',   // yellow
 };
 

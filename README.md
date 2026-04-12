@@ -102,8 +102,8 @@ npm run mock
 
 Você verá a saída colorida com um evento por segundo:
 ```
-[Mock] ✅ #0001 | river_level          |   7.43 m  | sensorId=0001 | jobId=1a2b3c4d
-[Mock] ✅ #0002 | forest_temperature   |  42.18 °C | sensorId=0005 | jobId=2b3c4d5e
+[Mock] ✅ #0001 | nivel_rio            |   7.43 m  | sensorId=0001 | jobId=1a2b3c4d
+[Mock] ✅ #0002 | temperatura_floresta |  42.18 °C | sensorId=0005 | jobId=2b3c4d5e
 ```
 
 ## Visualização dos Dados
@@ -163,7 +163,7 @@ curl -X POST http://localhost:3001/sensors/event \
   -H "Content-Type: application/json" \
   -d '{
     "sensorId": "sensor-001",
-    "sensorType": "river_level",
+    "sensorType": "nivel_rio",
     "value": 5.5,
     "unit": "m",
     "timestamp": "'$(date -u +"%Y-%m-%dT%H:%M:%SZ")'",
@@ -175,7 +175,7 @@ curl -X POST http://localhost:3001/sensors/event \
 ```json
 {
   "sensorId": "a1b2c3d4-0001-4000-8000-000000000001",
-  "sensorType": "river_level",
+  "sensorType": "nivel_rio",
   "value": 7.43,
   "unit": "m",
   "timestamp": "2025-04-10T18:00:00.000Z",
@@ -186,7 +186,7 @@ curl -X POST http://localhost:3001/sensors/event \
 }
 ```
 
-**Tipos de sensores:** `river_level` | `soil_moisture` | `slope_displacement` | `forest_temperature`
+**Tipos de sensores:** `nivel_rio` | `umidade_solo` | `deslocamento_encosta` | `temperatura_floresta`
 
 **Resposta `202 Accepted`:**
 ```json
