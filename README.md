@@ -1,10 +1,10 @@
 # CIVIC-SYNC
 
-> **Distributed crisis and natural disaster monitoring system**
+> **Sistema distribuído de monitoramento de crises e desastres naturais**
 
 Sistema distribuído para monitorar crises e desastres naturais em tempo real. Recebe dados de sensores IoT (nível de rio, umidade do solo, deslocamento de encosta, temperatura de floresta) e os replica para múltiplos operadores via fila BullMQ/Redis e persistência PostgreSQL.
 
-## Architecture
+## Arquitetura
 
 ```
 ┌─────────────────┐      POST /sensors/event      ┌──────────────────────┐
@@ -29,113 +29,115 @@ Sistema distribuído para monitorar crises e desastres naturais em tempo real. R
                                                     └────────────────────┘
 ```
 
-## Project Structure
+## Estrutura do Projeto
 
 ```
 civic-sync/
 ├── docker-compose.yml
 ├── .env.example
-├── package.json               # npm workspaces root
-├── tsconfig.base.json         # shared TS config (strict mode)
+├── package.json               # Raiz do projeto (npm workspaces)
+├── tsconfig.base.json         # Configuração compartilhada do TS (strict mode)
 ├── shared/
-│   └── types/                 # @civic-sync/types — Zod schemas + SensorEvent
+│   └── types/                 # @civic-sync/types — Schemas Zod + SensorEvent
 ├── services/
 │   ├── ingestion/             # @civic-sync/ingestion — Fastify REST API
 │   └── persistence/           # @civic-sync/persistence — BullMQ Worker + Prisma
 └── scripts/
-    └── mock-sensor.ts         # IoT simulation
+    └── mock-sensor.ts         # Simulação de sensores IoT
 ```
 
-## Quick Start
+## Guia Rápido de Execução
 
-### 1. Prerequisites
+### 1. Pré-requisitos
 
 - Node.js ≥ 18
 - Docker + Docker Compose
 
-### 2. Clone and configure environment
+### 2. Configurar Variáveis de Ambiente
 
+Crie o arquivo `.env` a partir do exemplo:
 ```bash
 cp .env.example .env
 ```
 
-### 3. Start infrastructure (PostgreSQL + Redis)
+### 3. Iniciar Infraestrutura (PostgreSQL + Redis)
 
 ```bash
 docker-compose up -d
 ```
 
-Wait for services to be healthy:
+Aguarde os serviços estarem saudáveis:
 ```bash
 docker-compose ps
 ```
 
-### 4. Install dependencies
+### 4. Instalar Dependências
 
+No diretório raiz:
 ```bash
 npm install
 ```
 
-### 5. Run Prisma migration
+### 5. Rodar Migrações do Banco de Dados
 
 ```bash
 npm run db:migrate
-# or from the persistence service:
-cd services/persistence && npx prisma migrate dev --name init
 ```
 
-### 6. Start both services
+### 6. Iniciar os Serviços (Ingestão e Persistência)
 
 ```bash
-# In terminal 1 — starts ingestion (port 3001) + persistence worker
+# Inicia ambos os serviços simultaneamente
 npm run dev
-
-# OR start individually:
-npm run dev:ingestion    # Terminal 1
-npm run dev:persistence  # Terminal 2
 ```
 
-### 7. Run the mock sensor
+### 7. Rodar o Simulador de Sensores (Mock)
 
+Em um novo terminal:
 ```bash
-# In a new terminal:
 npm run mock
-# or:
-npx tsx scripts/mock-sensor.ts
 ```
 
-You'll see colorized output with one event per second:
+Você verá a saída colorida com um evento por segundo:
 ```
 [Mock] ✅ #0001 | river_level          |   7.43 m  | sensorId=0001 | jobId=1a2b3c4d
 [Mock] ✅ #0002 | forest_temperature   |  42.18 °C | sensorId=0005 | jobId=2b3c4d5e
 ```
 
-## Verifying data in PostgreSQL
+## Visualização dos Dados
 
+Existem duas formas de verificar os dados persistidos:
+
+### 1. Via Navegador (Prisma Studio) — Recomendado
+Uma interface visual para explorar as tabelas do banco de dados.
 ```bash
-# Connect to PostgreSQL
+npm run db:studio
+```
+Em seguida, abra [http://localhost:5555](http://localhost:5555) no seu navegador.
+
+### 2. Via Terminal (psql)
+Conectando diretamente ao container do PostgreSQL:
+```bash
+# Conectar ao banco
 docker exec -it civic_sync_postgres psql -U civicsync -d civicsync
 
-# Count persisted events
+# Contar eventos persistidos
 SELECT count(*) FROM sensor_events;
 
-# View the last 5 events
+# Ver os últimos 5 eventos
 SELECT id, sensor_id, sensor_type, value, unit, timestamp
 FROM sensor_events
 ORDER BY created_at DESC
 LIMIT 5;
-
-# Inspect the raw JSON payload
-SELECT raw_payload FROM sensor_events LIMIT 1;
 ```
 
-## API Reference
+## Referência da API
 
 ### `POST /sensors/event`
 
-Ingests a sensor reading.
+Ingere uma leitura de sensor.
 
-**Request body:**
+**Corpo da requisição:**
 ```json
 {
   "sensorId": "a1b2c3d4-0001-4000-8000-000000000001",
@@ -150,9 +152,9 @@ Ingests a sensor reading.
 }
 ```
 
-**Sensor types:** `river_level` | `soil_moisture` | `slope_displacement` | `forest_temperature`
+**Tipos de sensores:** `river_level` | `soil_moisture` | `slope_displacement` | `forest_temperature`
 
-**Response `202 Accepted`:**
+**Resposta `202 Accepted`:**
 ```json
 {
   "status": "accepted",
@@ -162,27 +164,12 @@ Ingests a sensor reading.
 
 ### `GET /health`
 
-Returns service status.
+Retorna o status dos serviços.
 
-## Environment Variables
+## Stack Tecnológica
 
-| Variable | Default | Description |
-|---|---|---|
-| `DATABASE_URL` | `postgresql://civicsync:civicsync@localhost:5432/civicsync` | PostgreSQL connection string |
-| `REDIS_HOST` | `localhost` | Redis hostname |
-| `REDIS_PORT` | `6379` | Redis port |
-| `PORT` | `3001` | Ingestion service HTTP port |
-| `NODE_ENV` | — | Set to `production` to reduce Prisma logging |
-
-## Tech Stack
-
-| Layer | Technology |
-|---|---|
-| API | Fastify 5 + fastify-type-provider-zod |
-| Validation | Zod 3 |
-| Queue | BullMQ 5 + ioredis |
-| ORM | Prisma 6 |
-| Database | PostgreSQL 15 |
-| Cache/Queue | Redis 7 |
-| Language | TypeScript 5 (strict mode) |
-| Runner | tsx (dev) |
+- **API**: Fastify 5 + Zod
+- **Fila**: BullMQ 5 + ioredis
+- **ORM**: Prisma 6
+- **Banco de Dados**: PostgreSQL 15 + Redis 7
+- **Linguagem**: TypeScript 5 (Strict Mode)
