@@ -8,6 +8,32 @@ export async function sensorRoutes(app: FastifyInstance): Promise<void> {
   const server = app.withTypeProvider<ZodTypeProvider>();
 
   /**
+   * GET /sensors/types
+   * Returns the list of supported sensor types.
+   */
+  server.get(
+    '/sensors/types',
+    {
+      schema: {
+        response: {
+          200: z.object({
+            types: z.array(z.string()),
+          }),
+        },
+      },
+    },
+    async () => {
+      const types = [
+        'river_level',
+        'soil_moisture',
+        'slope_displacement',
+        'forest_temperature',
+      ];
+      return { types };
+    },
+  );
+
+  /**
    * POST /sensors/event
    * Validates the sensor payload and enqueues it for persistence.
    * Returns 202 Accepted with the BullMQ job ID.

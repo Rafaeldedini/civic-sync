@@ -135,9 +135,41 @@ LIMIT 5;
 
 ## Referência da API
 
+### `GET /health`
+
+Retorna o status dos serviços.
+
+**Exemplo de chamada:**
+```bash
+curl http://localhost:3001/health
+```
+
+### `GET /sensors/types`
+
+Retorna a lista de tipos de sensores suportados pelo sistema.
+
+**Exemplo de chamada:**
+```bash
+curl http://localhost:3001/sensors/types
+```
+
 ### `POST /sensors/event`
 
 Ingere uma leitura de sensor.
+
+**Exemplo de chamada:**
+```bash
+curl -X POST http://localhost:3001/sensors/event \
+  -H "Content-Type: application/json" \
+  -d '{
+    "sensorId": "sensor-001",
+    "sensorType": "river_level",
+    "value": 5.5,
+    "unit": "m",
+    "timestamp": "'$(date -u +"%Y-%m-%dT%H:%M:%SZ")'",
+    "location": { "lat": -23.55, "lng": -46.63 }
+  }'
+```
 
 **Corpo da requisição:**
 ```json
@@ -163,10 +195,6 @@ Ingere uma leitura de sensor.
   "jobId": "a1b2c3d4-0001-4000-8000-000000000001-2025-04-10T18:00:00.000Z"
 }
 ```
-
-### `GET /health`
-
-Retorna o status dos serviços.
 
 ## Stack Tecnológica
 
