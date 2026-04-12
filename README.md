@@ -1,5 +1,7 @@
 # CIVIC-SYNC
 
+> Alunos: Rafael Dedini, Nicolas Venciguerra, Caua Ferraz, Diogo Carvalho e Fabiano Junior
+
 > **Sistema distribuído de monitoramento de crises e desastres naturais**
 
 Sistema distribuído para monitorar crises e desastres naturais em tempo real. Recebe dados de sensores IoT (nível de rio, umidade do solo, deslocamento de encosta, temperatura de floresta) e os replica para múltiplos operadores via fila BullMQ/Redis e persistência PostgreSQL.
