@@ -1,5 +1,5 @@
 import { type SensorEvent } from '@civic-sync/types';
-import { prisma } from './client.js';
+import { prisma } from '@civic-sync/database';
 
 /**
  * Persists a raw sensor event to the database without any transformation.

@@ -27,6 +27,39 @@ export const sensorEventSchema = z.object({
 
 export type SensorEvent = z.infer<typeof sensorEventSchema>;
 
+// ─── Alert Severity Enum ──────────────────────────────────────────────────────
+
+export const AlertSeverityEnum = z.enum([
+  'normal',
+  'atencao',
+  'alerta',
+  'critico',
+]);
+
+export type AlertSeverity = z.infer<typeof AlertSeverityEnum>;
+
+// ─── Alert Assessment Schema ─────────────────────────────────────────────────
+
+export const alertAssessmentSchema = z.object({
+  sensorEventId: z.string().uuid().optional(),
+  sensorId: z.string().uuid(),
+  sensorType: SensorTypeEnum,
+  value: z.number(),
+  unit: z.string(),
+  severity: AlertSeverityEnum,
+  score: z.number().int().min(0).max(100),
+  message: z.string(),
+  thresholds: z.record(z.unknown()),
+  location: z.object({
+    lat: z.number(),
+    lng: z.number(),
+  }),
+  timestamp: z.string().datetime(),
+});
+
+export type AlertAssessment = z.infer<typeof alertAssessmentSchema>;
+
 // ─── Queue Config ─────────────────────────────────────────────────────────────
 
 export const QUEUE_NAME = 'sensor-events' as const;
+export const PROCESSING_QUEUE_NAME = 'sensor-processing' as const;

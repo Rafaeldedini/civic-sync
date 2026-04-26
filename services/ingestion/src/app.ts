@@ -5,6 +5,7 @@ import {
   validatorCompiler,
 } from 'fastify-type-provider-zod';
 import { sensorRoutes } from './routes/sensors.js';
+import { alertRoutes } from './routes/alerts.js';
 
 export async function buildApp(): Promise<ReturnType<typeof Fastify>> {
   const app = Fastify({
@@ -30,6 +31,7 @@ export async function buildApp(): Promise<ReturnType<typeof Fastify>> {
 
   // ── Routes ────────────────────────────────────────────────────────────────
   await app.register(sensorRoutes);
+  await app.register(alertRoutes);
 
   // ── Health check ─────────────────────────────────────────────────────────
   app.get('/health', async () => ({ status: 'ok', service: 'ingestion' }));

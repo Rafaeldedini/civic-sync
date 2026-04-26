@@ -1,8 +1,8 @@
 import { Worker, type Job } from 'bullmq';
 import { Redis } from 'ioredis';
 import { type SensorEvent, QUEUE_NAME } from '@civic-sync/types';
+import { prisma } from '@civic-sync/database';
 import { saveSensorEvent } from './repository.js';
-import { prisma } from './client.js';
 
 // ─── Redis Connection ─────────────────────────────────────────────────────────
 

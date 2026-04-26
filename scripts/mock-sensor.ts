@@ -1,17 +1,18 @@
 /**
  * mock-sensor.ts
  *
- * Sends 1 sensor event per second to the ingestion service.
- * Simulates realistic readings for all 4 sensor types.
+ * Sends sensor events to the ingestion service.
  *
  * Usage:
- *   npx tsx scripts/mock-sensor.ts
+ *   npx tsx scripts/mock-sensor.ts           # Normal mode: 1 event/second
+ *   npx tsx scripts/mock-sensor.ts --crisis  # Crisis mode: extreme values to trigger alerts
  */
 
 // ─── Config ───────────────────────────────────────────────────────────────────
 
 const INGESTION_URL = process.env.INGESTION_URL ?? 'http://localhost:3001';
 const INTERVAL_MS = 1000;
+const CRISIS_MODE = process.argv.includes('--crisis');
 
 // ─── Brazilian disaster-prone locations ──────────────────────────────────────
 
@@ -53,11 +54,20 @@ interface SensorSpec {
   max: number;
 }
 
+/** Normal operating ranges */
 const SENSOR_SPECS: Record<SensorType, SensorSpec> = {
-  nivel_rio: { unit: 'm', min: 0.5, max: 15.0 },
-  umidade_solo: { unit: '%', min: 10, max: 95 },
-  deslocamento_encosta: { unit: 'mm', min: 0, max: 50 },
-  temperatura_floresta: { unit: '°C', min: 15, max: 65 },
+  nivel_rio:             { unit: 'm',  min: 0.5,  max: 15.0 },
+  umidade_solo:          { unit: '%',  min: 10,    max: 95   },
+  deslocamento_encosta:  { unit: 'mm', min: 0,     max: 50   },
+  temperatura_floresta:  { unit: '°C', min: 15,    max: 65   },
+};
+
+/** Crisis scenario ranges — values intentionally in severe/critical zones */
+const CRISIS_SPECS: Record<SensorType, SensorSpec> = {
+  nivel_rio:             { unit: 'm',  min: 8.0,   max: 15.0 }, // alerta → crítico
+  umidade_solo:          { unit: '%',  min: 88,    max: 98   }, // alerta → crítico (saturação)
+  deslocamento_encosta:  { unit: 'mm', min: 20,    max: 50   }, // alerta → crítico
+  temperatura_floresta:  { unit: '°C', min: 45,    max: 65   }, // alerta → crítico
 };
 
 const SENSOR_TYPES = Object.keys(SENSOR_SPECS) as SensorType[];
@@ -74,7 +84,8 @@ function randomFrom<T>(arr: readonly T[]): T {
 
 function buildPayload() {
   const sensorType = randomFrom(SENSOR_TYPES);
-  const spec = SENSOR_SPECS[sensorType];
+  const specs = CRISIS_MODE ? CRISIS_SPECS : SENSOR_SPECS;
+  const spec = specs[sensorType];
   const location = randomFrom(LOCATIONS);
 
   return {
@@ -89,26 +100,36 @@ function buildPayload() {
 
 // ─── ANSI colors ──────────────────────────────────────────────────────────────
 
-const GREEN = '\x1b[32m';
-const RED = '\x1b[31m';
-const CYAN = '\x1b[36m';
+const GREEN  = '\x1b[32m';
+const RED    = '\x1b[31m';
+const CYAN   = '\x1b[36m';
 const YELLOW = '\x1b[33m';
-const RESET = '\x1b[0m';
+const BOLD   = '\x1b[1m';
+const RESET  = '\x1b[0m';
 
 const TYPE_COLORS: Record<SensorType, string> = {
-  nivel_rio: '\x1b[34m',          // blue
-  umidade_solo: '\x1b[32m',        // green
-  deslocamento_encosta: '\x1b[35m',   // magenta
-  temperatura_floresta: '\x1b[33m',   // yellow
+  nivel_rio:             '\x1b[34m',  // blue
+  umidade_solo:          '\x1b[32m',  // green
+  deslocamento_encosta:  '\x1b[35m',  // magenta
+  temperatura_floresta:  '\x1b[33m',  // yellow
 };
 
 // ─── Main loop ────────────────────────────────────────────────────────────────
 
 let count = 0;
 
+const modeLabel = CRISIS_MODE
+  ? `${RED}${BOLD}⚠️  CRISE${RESET}`
+  : `${GREEN}NORMAL${RESET}`;
+
 console.log(`${CYAN}[Mock] 🛰️  CIVIC-SYNC Mock Sensor Started${RESET}`);
 console.log(`${CYAN}[Mock] Targeting: ${INGESTION_URL}/sensors/event${RESET}`);
+console.log(`${CYAN}[Mock] Modo: ${modeLabel}`);
 console.log(`${CYAN}[Mock] Sending 1 event/second. Press Ctrl+C to stop.\n${RESET}`);
+
+if (CRISIS_MODE) {
+  console.log(`${RED}${BOLD}[Mock] 🚨 CRISIS MODE ATIVO — gerando valores extremos para demonstrar alertas críticos!${RESET}\n`);
+}
 
 const interval = setInterval(async () => {
   const payload = buildPayload();

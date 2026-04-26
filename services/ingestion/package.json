@@ -4,12 +4,13 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "tsx watch src/server.ts",
+    "dev": "tsx watch --env-file=.env src/server.ts",
     "build": "tsc --project tsconfig.json",
     "start": "node dist/server.js"
   },
   "dependencies": {
     "@civic-sync/types": "*",
+    "@civic-sync/database": "*",
     "@fastify/cors": "^10.0.0",
     "bullmq": "^5.34.0",
     "fastify": "^5.2.0",

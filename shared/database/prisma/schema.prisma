@@ -1,0 +1,70 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ─── Sensor Events (raw ingested data) ───────────────────────────────────────
+
+model SensorEvent {
+  id          String   @id @default(uuid()) @db.Uuid
+  sensorId    String   @map("sensor_id")
+  sensorType  String   @map("sensor_type")
+  value       Float
+  unit        String
+  timestamp   DateTime
+  locationLat Float    @map("location_lat")
+  locationLng Float    @map("location_lng")
+  rawPayload  Json     @map("raw_payload")
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  @@index([sensorId])
+  @@index([sensorType])
+  @@index([timestamp])
+  @@map("sensor_events")
+}
+
+// ─── Alert Assessments (scored + classified events) ───────────────────────────
+
+model AlertAssessment {
+  id            String   @id @default(uuid()) @db.Uuid
+  sensorEventId String?  @map("sensor_event_id") @db.Uuid
+  sensorId      String   @map("sensor_id")
+  sensorType    String   @map("sensor_type")
+  value         Float
+  unit          String
+  severity      String
+  score         Int
+  message       String
+  thresholds    Json
+  location      Json
+  timestamp     DateTime
+  processedAt   DateTime @default(now()) @map("processed_at")
+
+  @@index([severity])
+  @@index([sensorType])
+  @@index([sensorId])
+  @@index([timestamp])
+  @@index([score])
+  @@map("alert_assessments")
+}
+
+// ─── Alert Rules (configurable thresholds per sensor type) ────────────────────
+
+model AlertRule {
+  id          String   @id @default(uuid()) @db.Uuid
+  sensorType  String   @unique @map("sensor_type")
+  thresholds  Json
+  unit        String
+  description String
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  @@map("alert_rules")
+}
