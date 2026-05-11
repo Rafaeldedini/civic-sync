@@ -9,9 +9,9 @@
     "start": "node dist/server.js"
   },
   "dependencies": {
-    "@civic-sync/types": "*",
     "@civic-sync/database": "*",
-    "@fastify/cors": "^10.0.0",
+    "@civic-sync/types": "*",
+    "@fastify/cors": "^10.1.0",
     "bullmq": "^5.34.0",
     "fastify": "^5.2.0",
     "fastify-type-provider-zod": "^4.0.0",

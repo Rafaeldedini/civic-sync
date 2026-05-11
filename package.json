@@ -7,18 +7,19 @@
     "services/*"
   ],
   "scripts": {
-    "dev:ingestion":   "npm run dev --workspace=services/ingestion",
+    "dev:ingestion": "npm run dev --workspace=services/ingestion",
     "dev:persistence": "npm run dev --workspace=services/persistence",
-    "dev:processing":  "npm run dev --workspace=services/processing",
-    "dev": "npm run dev:ingestion & npm run dev:persistence & npm run dev:processing",
+    "dev:processing": "npm run dev --workspace=services/processing",
+    "dev": "concurrently \"npm run dev:ingestion\" \"npm run dev:persistence\" \"npm run dev:processing\"",
     "mock": "npx tsx scripts/mock-sensor.ts",
     "mock:crisis": "npx tsx scripts/mock-sensor.ts --crisis",
-    "db:migrate":  "npm run db:migrate  --workspace=shared/database",
+    "db:migrate": "npm run db:migrate  --workspace=shared/database",
     "db:generate": "npm run db:generate --workspace=shared/database",
-    "db:studio":   "npm run db:studio   --workspace=shared/database"
+    "db:studio": "npm run db:studio   --workspace=shared/database"
   },
   "devDependencies": {
     "@types/node": "^22.0.0",
+    "concurrently": "^9.2.1",
     "tsx": "^4.19.0",
     "typescript": "^5.7.0"
   }
