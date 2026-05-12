@@ -1,8 +1,11 @@
 import { Worker, type Job } from 'bullmq';
 import { Redis } from 'ioredis';
+import { createLogger } from '@civic-sync/logger';
 import { type SensorEvent, QUEUE_NAME } from '@civic-sync/types';
 import { prisma } from '@civic-sync/database';
 import { saveSensorEvent } from './repository.js';
+
+const log = createLogger('persistence');
 
 // ─── Redis Connection ─────────────────────────────────────────────────────────
 
@@ -13,20 +16,25 @@ const connection = new Redis({
 });
 
 connection.on('error', (err: Error) => {
-  console.error('[Worker] Redis connection error:', err.message);
+  log.error({ err: err.message }, 'Redis connection error');
 });
 
 // ─── Job Processor ────────────────────────────────────────────────────────────
 
 async function processJob(job: Job<SensorEvent>): Promise<void> {
-  console.log(
-    `[Worker] 📥 Received  | jobId=${job.id} | sensorId=${job.data.sensorId} | type=${job.data.sensorType} | attempt=${job.attemptsMade + 1}`,
+  log.info(
+    { jobId: job.id, sensorId: job.data.sensorId, type: job.data.sensorType, attempt: job.attemptsMade + 1 },
+    '📥 Received job',
   );
 
+  // If this throws (e.g. Prisma can't reach PostgreSQL), BullMQ will
+  // catch the error and schedule a retry based on the job's backoff config.
+  // The error is NOT swallowed — it propagates to trigger the retry mechanism.
   await saveSensorEvent(job.data);
 
-  console.log(
-    `[Worker] ✅ Persisted | jobId=${job.id} | sensorId=${job.data.sensorId}`,
+  log.info(
+    { jobId: job.id, sensorId: job.data.sensorId },
+    '✅ Persisted',
   );
 }
 
@@ -38,28 +46,29 @@ const worker = new Worker<SensorEvent>(QUEUE_NAME, processJob, {
 });
 
 worker.on('completed', (job) => {
-  console.log(`[Worker] 🎉 Completed | jobId=${job.id}`);
+  log.info({ jobId: job.id }, '🎉 Completed');
 });
 
 worker.on('failed', (job, err) => {
-  console.error(
-    `[Worker] ❌ Failed    | jobId=${job?.id} | error=${err.message} | attempt=${job?.attemptsMade}`,
+  log.error(
+    { jobId: job?.id, error: err.message, attempt: job?.attemptsMade, maxAttempts: job?.opts?.attempts },
+    '❌ Failed',
   );
 });
 
 worker.on('error', (err) => {
-  console.error('[Worker] Worker error:', err.message);
+  log.error({ err: err.message }, 'Worker error');
 });
 
-console.log(`[Worker] 🟢 Listening on queue "${QUEUE_NAME}"...`);
+log.info({ queue: QUEUE_NAME }, `🟢 Listening on queue "${QUEUE_NAME}"...`);
 
 // ─── Graceful Shutdown ────────────────────────────────────────────────────────
 
 async function shutdown(signal: string): Promise<void> {
-  console.log(`\n[Worker] Received ${signal}. Closing worker...`);
+  log.info({ signal }, 'Closing worker...');
   await worker.close();
   await prisma.$disconnect();
-  console.log('[Worker] Shutdown complete.');
+  log.info('Shutdown complete.');
   process.exit(0);
 }
 

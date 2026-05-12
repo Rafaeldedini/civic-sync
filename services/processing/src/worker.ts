@@ -1,26 +1,14 @@
 import { Worker, type Job } from 'bullmq';
 import { Redis } from 'ioredis';
+import { createLogger } from '@civic-sync/logger';
 import { type SensorEvent, PROCESSING_QUEUE_NAME } from '@civic-sync/types';
 import { prisma } from '@civic-sync/database';
 import { evaluateSensorEvent } from './scoring/engine.js';
 import { saveAlertAssessment } from './repository.js';
 
-// ─── ANSI colors ──────────────────────────────────────────────────────────────
+const log = createLogger('processing');
 
-const RESET   = '\x1b[0m';
-const CYAN    = '\x1b[36m';
-const GREEN   = '\x1b[32m';
-const YELLOW  = '\x1b[33m';
-const MAGENTA = '\x1b[35m';
-const RED     = '\x1b[31m';
-const BOLD    = '\x1b[1m';
-
-const SEVERITY_COLORS: Record<string, string> = {
-  normal:  GREEN,
-  atencao: YELLOW,
-  alerta:  MAGENTA,
-  critico: RED + BOLD,
-};
+// ─── Severity visual mapping (for dev-friendly logs) ─────────────────────────
 
 const SEVERITY_ICONS: Record<string, string> = {
   normal:  '🟢',
@@ -38,7 +26,7 @@ const connection = new Redis({
 });
 
 connection.on('error', (err: Error) => {
-  console.error('[Processing] Redis connection error:', err.message);
+  log.error({ err: err.message }, 'Redis connection error');
 });
 
 // ─── Job Processor ────────────────────────────────────────────────────────────
@@ -46,27 +34,31 @@ connection.on('error', (err: Error) => {
 async function processJob(job: Job<SensorEvent>): Promise<void> {
   const event = job.data;
 
-  console.log(
-    `${CYAN}[Processing] 📥 Received  | jobId=${job.id} | sensorId=${event.sensorId.slice(-4)} | type=${event.sensorType}${RESET}`,
+  log.info(
+    { jobId: job.id, sensorId: event.sensorId.slice(-4), type: event.sensorType, attempt: job.attemptsMade + 1 },
+    '📥 Received job',
   );
 
-  // 1. Evaluate the sensor event
+  // 1. Evaluate the sensor event (pure function — never fails due to DB)
   const assessment = evaluateSensorEvent(event);
 
-  // 2. Persist the assessment
+  // 2. Persist the assessment.
+  //    If PostgreSQL is down, this throws and BullMQ retries with backoff.
   const assessmentId = await saveAlertAssessment(assessment);
 
-  // 3. Log the result with appropriate severity color
-  const color = SEVERITY_COLORS[assessment.severity] ?? RESET;
+  // 3. Log the result with severity context
   const icon = SEVERITY_ICONS[assessment.severity] ?? '❓';
 
-  console.log(
-    `${color}[Processing] ${icon} ${assessment.severity.toUpperCase().padEnd(7)}${RESET} | ` +
-    `score=${String(assessment.score).padStart(3)}/100 | ` +
-    `${color}${assessment.message}${RESET}`,
-  );
-  console.log(
-    `${CYAN}[Processing] ✅ Saved     | assessmentId=${assessmentId}${RESET}`,
+  log.info(
+    {
+      severity: assessment.severity,
+      score: assessment.score,
+      assessmentId,
+      sensorType: assessment.sensorType,
+      value: assessment.value,
+      unit: assessment.unit,
+    },
+    `${icon} ${assessment.severity.toUpperCase().padEnd(7)} | score=${String(assessment.score).padStart(3)}/100 | ${assessment.message}`,
   );
 }
 
@@ -78,28 +70,29 @@ const worker = new Worker<SensorEvent>(PROCESSING_QUEUE_NAME, processJob, {
 });
 
 worker.on('completed', (job) => {
-  console.log(`[Processing] 🎉 Completed | jobId=${job.id}`);
+  log.info({ jobId: job.id }, '🎉 Completed');
 });
 
 worker.on('failed', (job, err) => {
-  console.error(
-    `[Processing] ❌ Failed    | jobId=${job?.id} | error=${err.message} | attempt=${job?.attemptsMade}`,
+  log.error(
+    { jobId: job?.id, error: err.message, attempt: job?.attemptsMade, maxAttempts: job?.opts?.attempts },
+    '❌ Failed',
   );
 });
 
 worker.on('error', (err) => {
-  console.error('[Processing] Worker error:', err.message);
+  log.error({ err: err.message }, 'Worker error');
 });
 
-console.log(`[Processing] 🟢 Listening on queue "${PROCESSING_QUEUE_NAME}"...`);
+log.info({ queue: PROCESSING_QUEUE_NAME }, `🟢 Listening on queue "${PROCESSING_QUEUE_NAME}"...`);
 
 // ─── Graceful Shutdown ────────────────────────────────────────────────────────
 
 async function shutdown(signal: string): Promise<void> {
-  console.log(`\n[Processing] Received ${signal}. Closing worker...`);
+  log.info({ signal }, 'Closing worker...');
   await worker.close();
   await prisma.$disconnect();
-  console.log('[Processing] Shutdown complete.');
+  log.info('Shutdown complete.');
   process.exit(0);
 }
 

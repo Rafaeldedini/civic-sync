@@ -11,6 +11,8 @@
     "dev:persistence": "npm run dev --workspace=services/persistence",
     "dev:processing": "npm run dev --workspace=services/processing",
     "dev": "concurrently \"npm run dev:ingestion\" \"npm run dev:persistence\" \"npm run dev:processing\"",
+    "dashboard": "npx serve . -p 8080 -s",
+    "start:all": "concurrently \"npm run dev\" \"npm run dashboard\"",
     "mock": "npx tsx scripts/mock-sensor.ts",
     "mock:crisis": "npx tsx scripts/mock-sensor.ts --crisis",
     "db:migrate": "npm run db:migrate  --workspace=shared/database",
