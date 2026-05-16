@@ -550,19 +550,28 @@
       }
 
       // ========== POLLING LOOP ==========
+      async function fetchHealthSafe() {
+        try { const r = await fetch(`${API_BASE}/health`); return await r.json(); } catch { return null; }
+      }
       async function poll() {
         try {
-          const [stats, alerts, health, metrics] = await Promise.all([
-            fetchJSON(`${API_BASE}/alerts/stats`),
-            fetchJSON(`${API_BASE}/alerts?limit=10`),
-            fetchJSON(`${API_BASE}/health`).catch(() => null),
+          const [health, metrics] = await Promise.all([
+            fetchHealthSafe(),
             fetchJSON(`${API_BASE}/admin/metrics`).catch(() => null),
           ]);
+          // Health & metrics always update (even when DB is down, API is still up)
           setOnline(true);
-          renderStats(stats);
-          renderFeed(alerts);
           if (health) renderHealth(health);
           if (metrics) renderMetrics(metrics);
+          // Stats & alerts may fail when Postgres is down — that's OK
+          try {
+            const [stats, alerts] = await Promise.all([
+              fetchJSON(`${API_BASE}/alerts/stats`),
+              fetchJSON(`${API_BASE}/alerts?limit=10`),
+            ]);
+            renderStats(stats);
+            renderFeed(alerts);
+          } catch { /* DB down — keep last data on screen */ }
         } catch (err) {
           console.warn('[CIVIC-SYNC] Polling error:', err.message);
           renderOffline();
