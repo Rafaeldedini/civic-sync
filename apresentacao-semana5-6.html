@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CIVIC-SYNC — Entrega Semana 5-6</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #0a0c12; --slide-bg: #111318; --card: #181c24; --border: rgba(255,255,255,.07);
+      --text: #e5e7eb; --muted: #8b93a1; --accent: #14b8a6; --accent2: #0d9488;
+      --green: #22c55e; --yellow: #facc15; --orange: #fb923c; --red: #ef4444;
+    }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'Inter', system-ui, sans-serif; background: var(--bg); color: var(--text); }
+
+    /* ── Slide frame ─── */
+    .slide-wrapper {
+      min-height: 100vh; display: flex; align-items: center; justify-content: center;
+      padding: 40px 48px;
+    }
+    .slide {
+      width: 100%; max-width: 1100px; min-height: 620px;
+      background: var(--slide-bg); border: 1px solid var(--border);
+      border-radius: 20px; padding: 48px 56px; position: relative; overflow: hidden;
+      box-shadow: 0 0 80px -20px rgba(20,184,166,.06), 0 20px 60px -20px rgba(0,0,0,.5);
+    }
+    .slide::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+      background: linear-gradient(90deg, var(--accent), var(--accent2), transparent);
+    }
+    .slide::after {
+      content: ''; position: absolute; top: -150px; right: -150px;
+      width: 400px; height: 400px; border-radius: 50%;
+      background: radial-gradient(circle, rgba(20,184,166,.05) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    /* ── Nav & page count ─── */
+    .slide-nav { position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%); display: flex; gap: 8px; z-index: 100; background: rgba(0,0,0,.5); padding: 8px 16px; border-radius: 999px; backdrop-filter: blur(8px); border: 1px solid var(--border); }
+    .slide-nav a { width: 10px; height: 10px; border-radius: 50%; background: rgba(255,255,255,.12); display: block; transition: all .3s; }
+    .slide-nav a:hover, .slide-nav a.active { background: var(--accent); box-shadow: 0 0 8px var(--accent); transform: scale(1.2); }
+    .page-num { position: absolute; bottom: 20px; right: 28px; font-size: .65rem; color: var(--muted); font-weight: 600; letter-spacing: .05em; }
+
+    /* ── Typography ─── */
+    .label { font-size: .65rem; font-weight: 700; color: var(--accent); letter-spacing: .18em; text-transform: uppercase; margin-bottom: 14px; }
+    h1 { font-size: 2.6rem; font-weight: 900; line-height: 1.1; margin-bottom: 10px; }
+    h1 span { color: var(--accent); }
+    h2 { font-size: 1.7rem; font-weight: 800; margin-bottom: 8px; }
+    h2 span { color: var(--accent); }
+    .subtitle { font-size: .9rem; color: var(--muted); line-height: 1.7; max-width: 650px; }
+    .body-text { font-size: .82rem; color: var(--muted); line-height: 1.7; margin-top: 8px; }
+    h3 { font-size: .95rem; font-weight: 700; color: var(--accent); margin-bottom: 8px; }
+
+    /* ── Grid & Cards ─── */
+    .grid { display: grid; gap: 16px; margin-top: 24px; }
+    .g2 { grid-template-columns: 1fr 1fr; }
+    .g3 { grid-template-columns: 1fr 1fr 1fr; }
+    .card { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 22px; }
+    .card-icon { font-size: 1.6rem; margin-bottom: 10px; }
+    .card-title { font-size: .82rem; font-weight: 700; margin-bottom: 4px; }
+    .card-desc { font-size: .73rem; color: var(--muted); line-height: 1.6; }
+
+    /* ── Table ─── */
+    table { width: 100%; border-collapse: collapse; margin-top: 12px; }
+    th { text-align: left; font-size: .6rem; color: var(--muted); text-transform: uppercase; letter-spacing: .1em; padding: 8px 10px; border-bottom: 1px solid var(--border); }
+    td { padding: 9px 10px; font-size: .78rem; border-bottom: 1px solid var(--border); }
+    .m { font-weight: 700; font-family: monospace; font-size: .72rem; }
+    .m-g { color: var(--green); } .m-p { color: var(--yellow); }
+    .path { font-family: monospace; color: var(--accent); font-size: .72rem; }
+    .badge { display: inline-block; padding: 2px 10px; border-radius: 999px; font-size: .6rem; font-weight: 700; }
+    .b-ok { background: rgba(34,197,94,.12); color: var(--green); }
+
+    /* ── Tags ─── */
+    .tag { display: inline-block; padding: 3px 12px; border-radius: 999px; font-size: .65rem; font-weight: 700; margin: 2px; }
+    .t-t { background: rgba(20,184,166,.12); color: var(--accent); }
+    .t-g { background: rgba(34,197,94,.12); color: var(--green); }
+    .t-y { background: rgba(250,204,21,.12); color: var(--yellow); }
+
+    /* ── Progress bar ─── */
+    .prog { background: rgba(255,255,255,.04); border-radius: 999px; height: 8px; margin-top: 8px; overflow: hidden; }
+    .prog-fill { height: 100%; border-radius: 999px; }
+
+    /* ── Members ─── */
+    .members { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 16px; }
+    .member { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 10px 18px; font-size: .78rem; font-weight: 600; }
+
+    /* ── Next steps ─── */
+    .step { display: flex; gap: 14px; margin-bottom: 18px; }
+    .step-n { width: 26px; height: 26px; border-radius: 50%; background: rgba(250,204,21,.12); color: var(--yellow); display: flex; align-items: center; justify-content: center; font-size: .7rem; font-weight: 800; flex-shrink: 0; }
+    .step-t { font-size: .82rem; font-weight: 700; }
+    .step-d { font-size: .73rem; color: var(--muted); line-height: 1.5; }
+
+    /* ── Arch boxes ─── */
+    .arch { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 14px 18px; text-align: center; font-size: .78rem; font-weight: 600; }
+    .arrow { color: var(--accent); font-size: 1.4rem; display: flex; align-items: center; justify-content: center; }
+  </style>
+</head>
+<body>
+
+<nav class="slide-nav">
+  <a href="#s1"></a><a href="#s2"></a><a href="#s3"></a>
+  <a href="#s4"></a><a href="#s5"></a><a href="#s6"></a>
+</nav>
+
+<!-- SLIDE 1: CAPA -->
+<div class="slide-wrapper" id="s1"><div class="slide">
+  <div class="label">Entrega Parcial — Semana 5 e 6 · Maio 2026</div>
+  <h1><span>CIVIC-SYNC</span></h1>
+  <h1>API REST + Dashboard de Monitoramento</h1>
+  <p class="subtitle" style="margin-top:16px;">
+    O CIVIC-SYNC é um <strong>sistema distribuído de monitoramento de crises e desastres naturais</strong>
+    projetado para cidades inteligentes. Sensores IoT espalhados pela cidade coletam dados em tempo real
+    — nível de rios, umidade do solo, deslocamento de encostas e temperatura de áreas florestais —
+    e o sistema processa, classifica e alerta automaticamente sobre riscos ambientais.
+  </p>
+  <p class="body-text" style="margin-top:12px;">
+    Nesta entrega, apresentamos a <strong>camada de API REST</strong> que expõe os dados processados,
+    e o <strong>dashboard web</strong> que permite visualizar alertas, estatísticas e leituras em tempo real
+    com atualização automática a cada 2 segundos.
+  </p>
+  <div class="members">
+    <div class="member">Rafael Dedini</div>
+    <div class="member">Nicolas Venciguerra</div>
+    <div class="member">Cauã Ferraz</div>
+    <div class="member">Diogo Carvalho</div>
+    <div class="member">Fabiano Junior</div>
+  </div>
+  <p style="margin-top:20px; font-size:.7rem; color:var(--muted);">Projeto de TCC — Sistemas Distribuídos · UNITAU</p>
+  <div class="page-num">1 / 6</div>
+</div></div>
+
+<!-- SLIDE 2: RECAP -->
+<div class="slide-wrapper" id="s2"><div class="slide">
+  <div class="label">Retrospectiva</div>
+  <h2>O que já foi <span>entregue</span> nas semanas anteriores</h2>
+  <p class="body-text">Antes de apresentar o trabalho desta etapa, um resumo das entregas anteriores que formam a base do sistema:</p>
+
+  <div class="grid g2">
+    <div class="card">
+      <div class="card-icon">🏗️</div>
+      <div class="card-title">Semana 1-2 — Arquitetura, Fila e Persistência</div>
+      <div class="card-desc">
+        Definimos a arquitetura de microsserviços usando <strong>npm workspaces</strong> como monorepo.
+        Configuramos a infraestrutura com <strong>Docker Compose</strong> (PostgreSQL 15 + Redis 7).
+        Criamos a API de ingestão com <strong>Fastify 5</strong>, validação rigorosa com <strong>Zod</strong>,
+        e duas filas no <strong>BullMQ</strong>: uma para persistência crua e outra para processamento.
+        O worker de persistência usa <strong>Prisma ORM</strong> para salvar os dados brutos no PostgreSQL.
+      </div>
+      <div class="prog"><div class="prog-fill" style="width:100%; background:var(--green);"></div></div>
+      <p style="font-size:.6rem; color:var(--green); margin-top:4px; font-weight:700;">✅ 100% — Entregue 13/04</p>
+    </div>
+    <div class="card">
+      <div class="card-icon">⚙️</div>
+      <div class="card-title">Semana 3-4 — Score Engine e Classificação de Alertas</div>
+      <div class="card-desc">
+        Desenvolvemos o <strong>Score Engine</strong>, um módulo que avalia cada leitura de sensor e atribui
+        uma pontuação de risco de 0 a 100 baseada em <strong>limiares configuráveis</strong> por tipo de sensor.
+        O sistema classifica automaticamente em 4 níveis de severidade: <strong>Normal, Atenção, Alerta e Crítico</strong>.
+        Criamos o <strong>mock sensor</strong> que simula 10 sensores IoT com dois modos: normal e crise.
+        Os resultados são persistidos como <strong>AlertAssessments</strong> no banco.
+      </div>
+      <div class="prog"><div class="prog-fill" style="width:100%; background:var(--green);"></div></div>
+      <p style="font-size:.6rem; color:var(--green); margin-top:4px; font-weight:700;">✅ 100% — Entregue 27/04</p>
+    </div>
+  </div>
+  <div class="page-num">2 / 6</div>
+</div></div>
+
+<!-- SLIDE 3: API REST -->
+<div class="slide-wrapper" id="s3"><div class="slide">
+  <div class="label">Semana 5-6 — Entrega Atual</div>
+  <h2>API REST — <span>7 Endpoints</span> para consumo de dados</h2>
+  <p class="body-text">
+    A API foi construída em <strong>Fastify 5</strong> com <strong>TypeScript strict</strong>.
+    Todas as rotas possuem <strong>validação de entrada e saída</strong> via Zod (type-safe).
+    O CORS está habilitado para permitir acesso do dashboard.
+    A API roda na porta <strong>3001</strong> e serve como ponto central de consulta do sistema.
+  </p>
+
+  <table>
+    <thead><tr><th>Método</th><th>Rota</th><th>Descrição</th><th>Status</th></tr></thead>
+    <tbody>
+      <tr><td><span class="m m-g">GET</span></td><td><span class="path">/health</span></td><td>Health check do serviço (verifica se a API está respondendo)</td><td><span class="badge b-ok">✅ Pronto</span></td></tr>
+      <tr><td><span class="m m-g">GET</span></td><td><span class="path">/sensors/types</span></td><td>Retorna os 4 tipos de sensores suportados pelo sistema</td><td><span class="badge b-ok">✅ Pronto</span></td></tr>
+      <tr><td><span class="m m-p">POST</span></td><td><span class="path">/sensors/event</span></td><td>Recebe leitura de sensor, valida com Zod e enfileira (retorna HTTP 202)</td><td><span class="badge b-ok">✅ Pronto</span></td></tr>
+      <tr><td><span class="m m-g">GET</span></td><td><span class="path">/alerts</span></td><td>Lista alertas com filtros: severity, sensorType, limit, offset (paginado)</td><td><span class="badge b-ok">✅ Pronto</span></td></tr>
+      <tr><td><span class="m m-g">GET</span></td><td><span class="path">/alerts/stats</span></td><td>Estatísticas agregadas: total, contagem por severidade, top 5 sensores</td><td><span class="badge b-ok">✅ Pronto</span></td></tr>
+      <tr><td><span class="m m-g">GET</span></td><td><span class="path">/alerts/:id</span></td><td>Busca um alerta específico por UUID</td><td><span class="badge b-ok">✅ Pronto</span></td></tr>
+      <tr><td><span class="m m-g">GET</span></td><td><span class="path">/alerts/sensors/:sensorId</span></td><td>Histórico de alertas de um sensor específico</td><td><span class="badge b-ok">✅ Pronto</span></td></tr>
+    </tbody>
+  </table>
+
+  <div style="margin-top:16px; display:flex; gap:6px; flex-wrap:wrap;">
+    <span class="tag t-t">Fastify 5</span><span class="tag t-t">Zod</span><span class="tag t-t">Prisma ORM</span><span class="tag t-t">TypeScript Strict</span><span class="tag t-g">CORS</span><span class="tag t-g">HTTP 202 Accepted</span>
+  </div>
+  <div class="page-num">3 / 6</div>
+</div></div>
+
+<!-- SLIDE 4: DASHBOARD -->
+<div class="slide-wrapper" id="s4"><div class="slide">
+  <div class="label">Semana 5-6 — Entrega Atual</div>
+  <h2>Dashboard — <span>Monitoramento em Tempo Real</span></h2>
+  <p class="body-text">
+    O dashboard é uma <strong>Single Page Application (SPA)</strong> em HTML puro que consome a API REST via <code>fetch()</code>.
+    Ele atualiza automaticamente a cada <strong>2 segundos</strong> sem recarregar a página, mostrando dados ao vivo do sistema.
+    O design usa <strong>dark mode</strong> com gradientes, animações de entrada e tipografia profissional via Google Fonts (Inter).
+  </p>
+  <div class="grid g2" style="margin-top:20px;">
+    <div>
+      <div class="card" style="margin-bottom:14px;">
+        <div class="card-icon">📊</div>
+        <div class="card-title">4 KPI Cards com Animação</div>
+        <div class="card-desc">Leituras processadas, estado crítico (com indicador pulsante quando há alertas), total em alerta e atenção. Números animam suavemente ao atualizar, com gradientes de cor por severidade.</div>
+      </div>
+      <div class="card" style="margin-bottom:14px;">
+        <div class="card-icon">🍩</div>
+        <div class="card-title">Gráfico Doughnut (Chart.js 4)</div>
+        <div class="card-desc">Distribuição visual por severidade: Normal (verde), Atenção (amarelo), Alerta (laranja), Crítico (vermelho). Tooltip mostra percentual. Label central com o total de leituras. Atualiza em tempo real.</div>
+      </div>
+      <div class="card">
+        <div class="card-icon">📡</div>
+        <div class="card-title">Live Feed — Tabela de Últimas Leituras</div>
+        <div class="card-desc">Mostra as 10 leituras mais recentes com tipo de sensor, valor, unidade, score de risco e badge de severidade. Cada linha entra com animação fadeUp escalonada.</div>
+      </div>
+    </div>
+    <div class="card" style="display:flex; flex-direction:column; justify-content:space-between;">
+      <div>
+        <div class="card-icon">⚡</div>
+        <div class="card-title">Detalhes Técnicos da Implementação</div>
+        <div class="card-desc" style="line-height:2.2; margin-top:8px;">
+          <span class="tag t-t">HTML único (SPA)</span><br>
+          <span class="tag t-t">TailwindCSS via CDN</span><br>
+          <span class="tag t-t">Chart.js 4 via CDN</span><br>
+          <span class="tag t-t">Google Fonts (Inter)</span><br>
+          <span class="tag t-g">Polling automático 2s</span><br>
+          <span class="tag t-g">fetch() API nativa</span><br>
+          <span class="tag t-g">Badge de conexão online/offline</span><br>
+          <span class="tag t-g">Dark mode profissional</span><br>
+          <span class="tag t-g">Animações CSS + JS</span><br>
+          <span class="tag t-g">Layout responsivo</span>
+        </div>
+      </div>
+      <p style="font-size:.68rem; color:var(--muted); margin-top:16px;">
+        O dashboard detecta automaticamente se a API está indisponível e exibe um indicador visual de "conexão perdida", sem travar a interface.
+      </p>
+    </div>
+  </div>
+  <div class="page-num">4 / 6</div>
+</div></div>
+
+<!-- SLIDE 5: ARQUITETURA -->
+<div class="slide-wrapper" id="s5"><div class="slide">
+  <div class="label">Visão Geral</div>
+  <h2>Arquitetura <span>Distribuída</span> do Sistema</h2>
+  <p class="body-text">
+    O sistema segue o padrão de <strong>microsserviços desacoplados via fila de mensagens</strong>.
+    Cada componente pode escalar e falhar independentemente. O Redis atua como broker de mensagens
+    entre a API de ingestão e os workers de processamento, garantindo que nenhum dado seja perdido
+    mesmo sob alta carga.
+  </p>
+
+  <div style="display:grid; grid-template-columns:1fr auto 1fr auto 1fr; gap:10px; align-items:center; margin-top:24px;">
+    <div class="arch" style="border-color:var(--accent);">🛰️ Sensores IoT<br><small style="color:var(--muted)">Mock: 10 sensores simulados</small></div>
+    <div class="arrow">→</div>
+    <div class="arch" style="border-color:var(--green);">🚀 Ingestion API<br><small style="color:var(--muted)">Fastify :3001 — Valida + Enfileira</small></div>
+    <div class="arrow">→</div>
+    <div class="arch" style="border-color:var(--orange);">📦 Redis + BullMQ<br><small style="color:var(--muted)">2 filas: persist + process</small></div>
+  </div>
+  <div style="display:grid; grid-template-columns:1fr 1fr auto 1fr; gap:10px; align-items:center; margin-top:10px;">
+    <div></div><div></div><div class="arrow">↓</div><div></div>
+  </div>
+  <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; align-items:center; margin-top:4px;">
+    <div class="arch" style="border-color:var(--yellow);">🌐 Dashboard SPA<br><small style="color:var(--muted)">HTML + Chart.js + Polling</small></div>
+    <div class="arch" style="border-color:var(--green);">💾 Persistence Worker<br><small style="color:var(--muted)">Prisma → PostgreSQL (dados crus)</small></div>
+    <div class="arch" style="border-color:var(--red);">🧠 Processing Worker<br><small style="color:var(--muted)">Score Engine → Alertas → PostgreSQL</small></div>
+  </div>
+
+  <div class="grid g3" style="margin-top:24px;">
+    <div class="card">
+      <div class="card-title">Backend</div>
+      <div class="card-desc"><span class="tag t-t">Node.js</span> <span class="tag t-t">TypeScript 5</span> <span class="tag t-t">Fastify 5</span> <span class="tag t-t">Prisma 6</span> <span class="tag t-t">BullMQ 5</span> <span class="tag t-t">Zod</span></div>
+    </div>
+    <div class="card">
+      <div class="card-title">Infraestrutura</div>
+      <div class="card-desc"><span class="tag t-g">PostgreSQL 15</span> <span class="tag t-g">Redis 7</span> <span class="tag t-g">Docker Compose</span> <span class="tag t-g">npm Workspaces</span></div>
+    </div>
+    <div class="card">
+      <div class="card-title">Frontend</div>
+      <div class="card-desc"><span class="tag t-y">HTML SPA</span> <span class="tag t-y">TailwindCSS</span> <span class="tag t-y">Chart.js 4</span> <span class="tag t-y">Polling 2s</span></div>
+    </div>
+  </div>
+  <div class="page-num">5 / 6</div>
+</div></div>
+
+<!-- SLIDE 6: PRÓXIMOS PASSOS -->
+<div class="slide-wrapper" id="s6"><div class="slide">
+  <div class="label">Planejamento</div>
+  <h2>Semana 7-8 — <span>Próximos Passos</span></h2>
+  <p class="body-text">A próxima (e última) etapa foca em tornar o sistema robusto para produção, com observabilidade, proteção e resiliência:</p>
+
+  <div style="max-width:680px; margin-top:24px;">
+    <div class="step">
+      <div class="step-n">1</div>
+      <div><div class="step-t">Logs Estruturados (Pino)</div><div class="step-d">Substituir todos os console.log por um logger profissional (Pino) com saída JSON em produção e pretty-print em desenvolvimento. Cada log terá contexto: jobId, sensorId, tipo, tentativa.</div></div>
+    </div>
+    <div class="step">
+      <div class="step-n">2</div>
+      <div><div class="step-t">Hardening da API</div><div class="step-d">Implementar Rate Limiting (máx. 200 req/min) para proteção contra DDoS. Health Check profundo que testa conexão com Postgres e Redis. Headers de segurança via Helmet.</div></div>
+    </div>
+    <div class="step">
+      <div class="step-n">3</div>
+      <div><div class="step-t">Tolerância a Falhas (Retry + DLQ)</div><div class="step-d">Configurar retry automático com backoff exponencial no BullMQ (8 tentativas, ~8.5 min). Dead Letter Queue para jobs que falharam definitivamente. Graceful shutdown em todos os serviços.</div></div>
+    </div>
+    <div class="step">
+      <div class="step-n">4</div>
+      <div><div class="step-t">Demo de Engenharia de Caos</div><div class="step-d">Preparar roteiro de demonstração: derrubar o PostgreSQL, provar que a API continua aceitando dados, e quando o banco voltar os dados são recuperados automaticamente.</div></div>
+    </div>
+  </div>
+
+  <div style="margin-top:36px; padding:20px 24px; background:var(--card); border:1px solid var(--border); border-radius:14px; max-width:460px;">
+    <div style="font-size:.68rem; color:var(--muted); text-transform:uppercase; letter-spacing:.1em; font-weight:700;">Progresso Geral do Projeto</div>
+    <div class="prog" style="height:12px; margin-top:10px;">
+      <div class="prog-fill" style="width:75%; background:linear-gradient(90deg, var(--accent), var(--green));"></div>
+    </div>
+    <div style="display:flex; justify-content:space-between; margin-top:6px; font-size:.68rem; color:var(--muted);">
+      <span><strong style="color:var(--text);">75%</strong> concluído</span>
+      <span>Entrega final: 25/05</span>
+    </div>
+  </div>
+  <div class="page-num">6 / 6</div>
+</div></div>
+
+<script>
+  const dots = document.querySelectorAll('.slide-nav a');
+  const wraps = document.querySelectorAll('.slide-wrapper');
+  const obs = new IntersectionObserver(es => {
+    es.forEach(e => { if (e.isIntersecting) { dots.forEach(d => d.classList.remove('active')); const i = [...wraps].indexOf(e.target); if (dots[i]) dots[i].classList.add('active'); }});
+  }, { threshold: 0.5 });
+  wraps.forEach(w => obs.observe(w));
+</script>
+</body>
+</html>
