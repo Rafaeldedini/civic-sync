@@ -1,6 +1,8 @@
 import Fastify from 'fastify';
 import cors from '@fastify/cors';
+import helmet from '@fastify/helmet';
 import rateLimit from '@fastify/rate-limit';
+import { randomUUID } from 'node:crypto';
 import {
   serializerCompiler,
   validatorCompiler,
@@ -8,6 +10,7 @@ import {
 import { prisma } from '@civic-sync/database';
 import { sensorRoutes } from './routes/sensors.js';
 import { alertRoutes } from './routes/alerts.js';
+import { adminRoutes } from './routes/admin.js';
 
 export async function buildApp(): ReturnType<typeof Fastify> {
   const app = Fastify({
@@ -22,6 +25,10 @@ export async function buildApp(): ReturnType<typeof Fastify> {
         },
       },
     },
+    // ── Generate unique request ID for correlation ─────────────────────────
+    genReqId: (req) => {
+      return (req.headers['x-request-id'] as string) ?? randomUUID();
+    },
   });
 
   // ── Zod type provider ─────────────────────────────────────────────────────
@@ -29,7 +36,21 @@ export async function buildApp(): ReturnType<typeof Fastify> {
   app.setSerializerCompiler(serializerCompiler);
 
   // ── Plugins ───────────────────────────────────────────────────────────────
+
   await app.register(cors, { origin: true });
+
+  // ── Helmet (Security Headers) ─────────────────────────────────────────────
+  //
+  // Adds secure HTTP headers automatically:
+  //   - Content-Security-Policy
+  //   - X-Content-Type-Options: nosniff
+  //   - X-Frame-Options: SAMEORIGIN
+  //   - Strict-Transport-Security
+  //   - X-XSS-Protection
+  //
+  await app.register(helmet, {
+    contentSecurityPolicy: false, // Disable CSP for API-only service
+  });
 
   // ── Rate Limiting (DDoS Protection) ───────────────────────────────────────
   await app.register(rateLimit, {
@@ -39,9 +60,21 @@ export async function buildApp(): ReturnType<typeof Fastify> {
     keyGenerator: (req) => req.ip,
   });
 
+  // ── Correlation ID Hook ───────────────────────────────────────────────────
+  //
+  // Propagates the X-Request-ID from the incoming request through the entire
+  // pipeline. Workers receive this ID inside the job data, allowing end-to-end
+  // tracing of a sensor reading from ingestion → queue → persistence → processing.
+  //
+  app.addHook('onSend', (_request, reply, _payload, done) => {
+    reply.header('X-Request-ID', _request.id);
+    done();
+  });
+
   // ── Routes ────────────────────────────────────────────────────────────────
   await app.register(sensorRoutes);
   await app.register(alertRoutes);
+  await app.register(adminRoutes);
 
   // ── Deep Health Check ─────────────────────────────────────────────────────
   //

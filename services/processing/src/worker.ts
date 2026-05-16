@@ -31,11 +31,17 @@ connection.on('error', (err: Error) => {
 
 // ─── Job Processor ────────────────────────────────────────────────────────────
 
-async function processJob(job: Job<SensorEvent>): Promise<void> {
-  const event = job.data;
+async function processJob(job: Job<SensorEvent & { _correlationId?: string }>): Promise<void> {
+  const { _correlationId, ...event } = job.data;
 
   log.info(
-    { jobId: job.id, sensorId: event.sensorId.slice(-4), type: event.sensorType, attempt: job.attemptsMade + 1 },
+    {
+      jobId: job.id,
+      correlationId: _correlationId,
+      sensorId: event.sensorId.slice(-4),
+      type: event.sensorType,
+      attempt: job.attemptsMade + 1,
+    },
     '📥 Received job',
   );
 
@@ -46,11 +52,12 @@ async function processJob(job: Job<SensorEvent>): Promise<void> {
   //    If PostgreSQL is down, this throws and BullMQ retries with backoff.
   const assessmentId = await saveAlertAssessment(assessment);
 
-  // 3. Log the result with severity context
+  // 3. Log the result with severity context and correlation ID
   const icon = SEVERITY_ICONS[assessment.severity] ?? '❓';
 
   log.info(
     {
+      correlationId: _correlationId,
       severity: assessment.severity,
       score: assessment.score,
       assessmentId,
@@ -74,9 +81,18 @@ worker.on('completed', (job) => {
 });
 
 worker.on('failed', (job, err) => {
+  const isDeadLetter = job?.attemptsMade === job?.opts?.attempts;
   log.error(
-    { jobId: job?.id, error: err.message, attempt: job?.attemptsMade, maxAttempts: job?.opts?.attempts },
-    '❌ Failed',
+    {
+      jobId: job?.id,
+      error: err.message,
+      attempt: job?.attemptsMade,
+      maxAttempts: job?.opts?.attempts,
+      deadLetter: isDeadLetter,
+    },
+    isDeadLetter
+      ? '🪦 DEAD LETTER — Exhausted all retries, job moved to DLQ'
+      : '❌ Failed',
   );
 });
 

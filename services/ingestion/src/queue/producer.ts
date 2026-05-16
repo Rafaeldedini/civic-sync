@@ -40,7 +40,7 @@ const JOB_OPTIONS = {
     delay: 2000, // base delay: 2 seconds
   },
   removeOnComplete: 100,
-  removeOnFail: 500,
+  removeOnFail: false,   // ← KEEP failed jobs (Dead Letter Queue pattern)
 };
 
 /** Persistence queue — raw events → PostgreSQL sensor_events */
@@ -70,18 +70,29 @@ processingQueue.on('error', (err) => {
  *  - sensor-events       → Persistence Service (raw storage)
  *  - sensor-processing   → Processing Service  (scoring + alerts)
  *
+ * The correlationId is stored in the job data so workers can trace
+ * the event back to the original HTTP request (end-to-end observability).
+ *
  * Returns the jobId (same for both queues).
  */
-export async function publishSensorEvent(event: SensorEvent): Promise<string> {
+export async function publishSensorEvent(
+  event: SensorEvent,
+  correlationId?: string,
+): Promise<string> {
   const jobId = `${event.sensorId}-${event.timestamp}`;
 
+  // Inject the correlation ID into the event data for end-to-end tracing
+  const enrichedEvent = correlationId
+    ? { ...event, _correlationId: correlationId }
+    : event;
+
   const [persistenceJob] = await Promise.all([
-    persistenceQueue.add('ingest', event, { jobId }),
-    processingQueue.add('process', event, { jobId }),
+    persistenceQueue.add('ingest', enrichedEvent, { jobId }),
+    processingQueue.add('process', enrichedEvent, { jobId }),
   ]);
 
   log.info(
-    { jobId: persistenceJob.id, sensorId: event.sensorId, type: event.sensorType },
+    { jobId: persistenceJob.id, sensorId: event.sensorId, type: event.sensorType, correlationId },
     'Job enqueued',
   );
 

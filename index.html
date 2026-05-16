@@ -247,6 +247,78 @@
       </div>
     </section>
 
+    <!-- ===== SYSTEM HEALTH (Circuit Breaker + Metrics) ===== -->
+    <section class="fade-up grid grid-cols-1 lg:grid-cols-3 gap-5">
+
+      <!-- Circuit Breaker Semaphore -->
+      <div class="rounded-2xl bg-gray-800/60 border border-white/5 p-6">
+        <h2 class="text-sm font-bold text-gray-300 mb-4 flex items-center gap-2">
+          <svg class="w-4 h-4 text-brand-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+          Saúde do Sistema
+        </h2>
+        <div id="health-semaphore" class="space-y-3">
+          <div class="flex items-center justify-between">
+            <span class="text-xs text-gray-400">PostgreSQL</span>
+            <span id="health-pg" class="badge badge-normal">—</span>
+          </div>
+          <div class="flex items-center justify-between">
+            <span class="text-xs text-gray-400">Redis</span>
+            <span id="health-redis" class="badge badge-normal">—</span>
+          </div>
+          <div class="flex items-center justify-between">
+            <span class="text-xs text-gray-400">API Ingestion</span>
+            <span id="health-api" class="badge badge-normal">—</span>
+          </div>
+          <div class="mt-4 pt-4 border-t border-white/5 flex items-center gap-3">
+            <div id="circuit-light" class="w-5 h-5 rounded-full bg-gray-600 transition-all duration-500"></div>
+            <span id="circuit-label" class="text-sm font-bold text-gray-400">Verificando…</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Runtime Metrics -->
+      <div class="rounded-2xl bg-gray-800/60 border border-white/5 p-6">
+        <h2 class="text-sm font-bold text-gray-300 mb-4 flex items-center gap-2">
+          <svg class="w-4 h-4 text-brand-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+          Métricas de Runtime
+        </h2>
+        <div class="space-y-3 text-xs">
+          <div class="flex justify-between"><span class="text-gray-400">Uptime</span><span id="m-uptime" class="text-gray-200 font-mono">—</span></div>
+          <div class="flex justify-between"><span class="text-gray-400">Memória (RSS)</span><span id="m-rss" class="text-gray-200 font-mono">—</span></div>
+          <div class="flex justify-between"><span class="text-gray-400">Heap Usado</span><span id="m-heap" class="text-gray-200 font-mono">—</span></div>
+          <div class="flex justify-between"><span class="text-gray-400">Node.js</span><span id="m-node" class="text-gray-200 font-mono">—</span></div>
+        </div>
+      </div>
+
+      <!-- Queue Metrics + DLQ -->
+      <div class="rounded-2xl bg-gray-800/60 border border-white/5 p-6">
+        <h2 class="text-sm font-bold text-gray-300 mb-4 flex items-center gap-2">
+          <svg class="w-4 h-4 text-brand-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
+          Filas BullMQ
+        </h2>
+        <div class="space-y-2 text-xs">
+          <p class="text-[.65rem] font-semibold text-gray-500 uppercase tracking-wider">Persistência</p>
+          <div class="flex gap-2 flex-wrap">
+            <span class="badge badge-normal" id="q-p-wait">Aguardando: —</span>
+            <span class="badge badge-atencao" id="q-p-active">Ativos: —</span>
+            <span class="badge badge-critico" id="q-p-failed">Falhas: —</span>
+          </div>
+          <p class="text-[.65rem] font-semibold text-gray-500 uppercase tracking-wider mt-3">Processamento</p>
+          <div class="flex gap-2 flex-wrap">
+            <span class="badge badge-normal" id="q-x-wait">Aguardando: —</span>
+            <span class="badge badge-atencao" id="q-x-active">Ativos: —</span>
+            <span class="badge badge-critico" id="q-x-failed">Falhas: —</span>
+          </div>
+          <div class="mt-4 pt-4 border-t border-white/5">
+            <div class="flex items-center justify-between">
+              <span class="text-gray-400 flex items-center gap-1">🪦 Dead Letter Queue</span>
+              <span id="dlq-total" class="text-sm font-extrabold text-red-400 tabular-nums">0</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <!-- ===== FOOTER ===== -->
     <footer class="text-center text-[.6rem] text-gray-600 pt-4 pb-2 tracking-wide uppercase">
       CIVIC-SYNC &copy; 2026 — Sistema Distribuído de Monitoramento de Crises
@@ -274,6 +346,25 @@
       const $connDot      = document.getElementById('conn-dot');
       const $connText     = document.getElementById('conn-text');
       const $chartCenter  = document.getElementById('chart-center-val');
+      // Health panel refs
+      const $healthPg     = document.getElementById('health-pg');
+      const $healthRedis  = document.getElementById('health-redis');
+      const $healthApi    = document.getElementById('health-api');
+      const $circuitLight = document.getElementById('circuit-light');
+      const $circuitLabel = document.getElementById('circuit-label');
+      // Metrics refs
+      const $mUptime = document.getElementById('m-uptime');
+      const $mRss    = document.getElementById('m-rss');
+      const $mHeap   = document.getElementById('m-heap');
+      const $mNode   = document.getElementById('m-node');
+      // Queue refs
+      const $qPWait   = document.getElementById('q-p-wait');
+      const $qPActive = document.getElementById('q-p-active');
+      const $qPFailed = document.getElementById('q-p-failed');
+      const $qXWait   = document.getElementById('q-x-wait');
+      const $qXActive = document.getElementById('q-x-active');
+      const $qXFailed = document.getElementById('q-x-failed');
+      const $dlqTotal  = document.getElementById('dlq-total');
 
       // ========== SEVERITY HELPERS ==========
       const SEVERITY_COLORS = {
@@ -291,23 +382,17 @@
       };
 
       const SENSOR_LABELS = {
-        nivel_rio:       'Nível do Rio',
-        pluviometro:     'Pluviômetro',
-        umidade_solo:    'Umidade do Solo',
-        temperatura:     'Temperatura',
-        vento:           'Vento',
-        qualidade_ar:    'Qualidade do Ar',
-        pressao:         'Pressão Atm.',
-        sismografo:      'Sismógrafo',
+        nivel_rio:            'Nível do Rio',
+        umidade_solo:         'Umidade do Solo',
+        deslocamento_encosta: 'Desloc. Encosta',
+        temperatura_floresta: 'Temp. Floresta',
       };
 
       function sensorLabel(raw) {
         return SENSOR_LABELS[raw] || raw.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
       }
 
-      function badgeClass(sev) {
-        return 'badge badge-' + sev;
-      }
+      function badgeClass(sev) { return 'badge badge-' + sev; }
 
       function rowAccentClass(sev) {
         const map = {
@@ -334,67 +419,34 @@
         }, 22);
       }
 
+      function formatUptime(s) {
+        const h = Math.floor(s / 3600);
+        const m = Math.floor((s % 3600) / 60);
+        const sec = s % 60;
+        return h > 0 ? `${h}h ${m}m ${sec}s` : m > 0 ? `${m}m ${sec}s` : `${sec}s`;
+      }
+
       // ========== CHART SETUP ==========
       const ctx = document.getElementById('chart-doughnut').getContext('2d');
-
       const doughnutData = {
         labels: ['Normal', 'Atenção', 'Alerta', 'Crítico'],
         datasets: [{
           data: [0, 0, 0, 0],
-          backgroundColor: [
-            SEVERITY_COLORS.normal.bg,
-            SEVERITY_COLORS.atencao.bg,
-            SEVERITY_COLORS.alerta.bg,
-            SEVERITY_COLORS.critico.bg,
-          ],
-          borderColor: [
-            SEVERITY_COLORS.normal.border,
-            SEVERITY_COLORS.atencao.border,
-            SEVERITY_COLORS.alerta.border,
-            SEVERITY_COLORS.critico.border,
-          ],
-          borderWidth: 2,
-          hoverBorderWidth: 3,
-          spacing: 4,
-          borderRadius: 6,
+          backgroundColor: [ SEVERITY_COLORS.normal.bg, SEVERITY_COLORS.atencao.bg, SEVERITY_COLORS.alerta.bg, SEVERITY_COLORS.critico.bg ],
+          borderColor: [ SEVERITY_COLORS.normal.border, SEVERITY_COLORS.atencao.border, SEVERITY_COLORS.alerta.border, SEVERITY_COLORS.critico.border ],
+          borderWidth: 2, hoverBorderWidth: 3, spacing: 4, borderRadius: 6,
         }],
       };
-
       const doughnutChart = new Chart(ctx, {
-        type: 'doughnut',
-        data: doughnutData,
+        type: 'doughnut', data: doughnutData,
         options: {
-          responsive: true,
-          maintainAspectRatio: true,
-          cutout: '68%',
+          responsive: true, maintainAspectRatio: true, cutout: '68%',
           plugins: {
-            legend: {
-              position: 'bottom',
-              labels: {
-                color: '#9ca3af',
-                font: { family: 'Inter', size: 11, weight: '600' },
-                padding: 16,
-                usePointStyle: true,
-                pointStyleWidth: 10,
-              },
-            },
+            legend: { position: 'bottom', labels: { color: '#9ca3af', font: { family: 'Inter', size: 11, weight: '600' }, padding: 16, usePointStyle: true, pointStyleWidth: 10 } },
             tooltip: {
-              backgroundColor: '#1f2937',
-              titleColor: '#f9fafb',
-              bodyColor: '#d1d5db',
-              borderColor: 'rgba(255,255,255,.08)',
-              borderWidth: 1,
-              padding: 12,
-              cornerRadius: 10,
-              titleFont: { family: 'Inter', weight: '700', size: 13 },
-              bodyFont: { family: 'Inter', size: 12 },
-              callbacks: {
-                label: function(context) {
-                  const total = context.dataset.data.reduce((a, b) => a + b, 0);
-                  const pct = total ? ((context.parsed / total) * 100).toFixed(1) : 0;
-                  return ` ${context.label}: ${context.parsed.toLocaleString('pt-BR')} (${pct}%)`;
-                },
-              },
+              backgroundColor: '#1f2937', titleColor: '#f9fafb', bodyColor: '#d1d5db', borderColor: 'rgba(255,255,255,.08)', borderWidth: 1, padding: 12, cornerRadius: 10,
+              titleFont: { family: 'Inter', weight: '700', size: 13 }, bodyFont: { family: 'Inter', size: 12 },
+              callbacks: { label: function(ctx) { const t = ctx.dataset.data.reduce((a,b) => a+b, 0); const p = t ? ((ctx.parsed/t)*100).toFixed(1) : 0; return ` ${ctx.label}: ${ctx.parsed.toLocaleString('pt-BR')} (${p}%)`; } },
             },
           },
           animation: { animateRotate: true, animateScale: false, duration: 600, easing: 'easeOutQuart' },
@@ -403,121 +455,120 @@
 
       // ========== CONNECTION STATUS ==========
       let wasOnline = false;
-
       function setOnline(online) {
-        if (online) {
-          $connDot.className = 'status-dot online';
-          $connText.textContent = 'Conectado';
-          wasOnline = true;
-        } else {
-          $connDot.className = 'status-dot offline';
-          $connText.textContent = wasOnline ? 'Conexão perdida' : 'Aguardando conexão…';
-        }
+        if (online) { $connDot.className = 'status-dot online'; $connText.textContent = 'Conectado'; wasOnline = true; }
+        else { $connDot.className = 'status-dot offline'; $connText.textContent = wasOnline ? 'Conexão perdida' : 'Aguardando conexão…'; }
       }
 
       // ========== FETCH HELPERS ==========
-      async function fetchStats() {
-        const res = await fetch(`${API_BASE}/alerts/stats`);
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        return res.json();
-      }
-
-      async function fetchAlerts() {
-        const res = await fetch(`${API_BASE}/alerts?limit=10`);
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        return res.json();
-      }
+      async function fetchJSON(url) { const r = await fetch(url); if (!r.ok) throw new Error(`HTTP ${r.status}`); return r.json(); }
 
       // ========== RENDER FUNCTIONS ==========
       function renderStats(stats) {
         const { total, bySeverity } = stats;
-        const normal  = bySeverity.normal  ?? 0;
-        const atencao = bySeverity.atencao ?? 0;
-        const alerta  = bySeverity.alerta  ?? 0;
-        const critico = bySeverity.critico ?? 0;
-
-        // KPI numbers
-        animateNumber($totalVal,   total);
-        animateNumber($criticoVal, critico);
-        animateNumber($alertaVal,  alerta);
-        animateNumber($atencaoVal, atencao);
-
-        // Critical pulse
-        if (critico > 0) {
-          $criticoPulse.classList.remove('hidden');
-          $criticoPulse.classList.add('flex');
-        } else {
-          $criticoPulse.classList.add('hidden');
-          $criticoPulse.classList.remove('flex');
-        }
-
-        // Doughnut chart
+        const normal = bySeverity.normal ?? 0, atencao = bySeverity.atencao ?? 0;
+        const alerta = bySeverity.alerta ?? 0, critico = bySeverity.critico ?? 0;
+        animateNumber($totalVal, total); animateNumber($criticoVal, critico);
+        animateNumber($alertaVal, alerta); animateNumber($atencaoVal, atencao);
+        if (critico > 0) { $criticoPulse.classList.remove('hidden'); $criticoPulse.classList.add('flex'); }
+        else { $criticoPulse.classList.add('hidden'); $criticoPulse.classList.remove('flex'); }
         doughnutData.datasets[0].data = [normal, atencao, alerta, critico];
-        doughnutChart.update('none'); // skip animation on polling updates
-
-        // Center label
+        doughnutChart.update('none');
         $chartCenter.textContent = total.toLocaleString('pt-BR');
       }
 
       function renderFeed(alerts) {
         if (!alerts.data || alerts.data.length === 0) {
-          $feedBody.innerHTML = `
-            <tr>
-              <td colspan="5" class="py-12 text-center text-gray-600 text-sm">
-                Nenhuma leitura disponível.
-              </td>
-            </tr>`;
+          $feedBody.innerHTML = `<tr><td colspan="5" class="py-12 text-center text-gray-600 text-sm">Nenhuma leitura disponível.</td></tr>`;
           return;
         }
-
         $feedBody.innerHTML = alerts.data.map((a, i) => {
-          const sev   = a.severity || 'normal';
-          const accent = rowAccentClass(sev);
-          const delay  = i * 30;
-          return `
-            <tr class="feed-row border-b border-white/[.03]" style="animation: fadeUp .35s ease ${delay}ms both;">
-              <td class="py-3 pr-4 font-medium text-gray-200">${sensorLabel(a.sensorType)}</td>
-              <td class="py-3 pr-4 tabular-nums ${accent}">${a.value}</td>
-              <td class="py-3 pr-4 text-gray-500">${a.unit || '—'}</td>
-              <td class="py-3 pr-4 tabular-nums ${accent}">${a.score ?? '—'}</td>
-              <td class="py-3">
-                <span class="${badgeClass(sev)}">${SEVERITY_LABELS[sev] || sev}</span>
-              </td>
-            </tr>`;
+          const sev = a.severity || 'normal', accent = rowAccentClass(sev), delay = i * 30;
+          return `<tr class="feed-row border-b border-white/[.03]" style="animation: fadeUp .35s ease ${delay}ms both;">
+            <td class="py-3 pr-4 font-medium text-gray-200">${sensorLabel(a.sensorType)}</td>
+            <td class="py-3 pr-4 tabular-nums ${accent}">${a.value}</td>
+            <td class="py-3 pr-4 text-gray-500">${a.unit || '—'}</td>
+            <td class="py-3 pr-4 tabular-nums ${accent}">${a.score ?? '—'}</td>
+            <td class="py-3"><span class="${badgeClass(sev)}">${SEVERITY_LABELS[sev] || sev}</span></td>
+          </tr>`;
         }).join('');
+      }
+
+      // ========== HEALTH / CIRCUIT BREAKER ==========
+      function setDepBadge(el, status) {
+        if (status === 'connected') { el.textContent = 'Conectado'; el.className = 'badge badge-normal'; }
+        else { el.textContent = 'Desconectado'; el.className = 'badge badge-critico'; }
+      }
+
+      function renderHealth(health) {
+        const deps = health.dependencies || {};
+        const pgOk = deps.postgres?.status === 'connected';
+        const redisOk = deps.redis?.status === 'connected';
+        setDepBadge($healthPg, deps.postgres?.status);
+        setDepBadge($healthRedis, deps.redis?.status);
+        $healthApi.textContent = 'Online'; $healthApi.className = 'badge badge-normal';
+
+        if (pgOk && redisOk) {
+          $circuitLight.style.background = '#22c55e'; $circuitLight.style.boxShadow = '0 0 12px #22c55e';
+          $circuitLabel.textContent = 'SISTEMA OPERACIONAL'; $circuitLabel.className = 'text-sm font-bold text-green-400';
+        } else {
+          $circuitLight.style.background = '#ef4444'; $circuitLight.style.boxShadow = '0 0 12px #ef4444';
+          const down = []; if (!pgOk) down.push('Postgres'); if (!redisOk) down.push('Redis');
+          $circuitLabel.textContent = `DEGRADADO — ${down.join(', ')} fora`; $circuitLabel.className = 'text-sm font-bold text-red-400';
+        }
+      }
+
+      function renderHealthOffline() {
+        $healthApi.textContent = 'Offline'; $healthApi.className = 'badge badge-critico';
+        $healthPg.textContent = '—'; $healthPg.className = 'badge badge-normal';
+        $healthRedis.textContent = '—'; $healthRedis.className = 'badge badge-normal';
+        $circuitLight.style.background = '#ef4444'; $circuitLight.style.boxShadow = '0 0 12px #ef4444';
+        $circuitLabel.textContent = 'API INDISPONÍVEL'; $circuitLabel.className = 'text-sm font-bold text-red-400';
+      }
+
+      // ========== METRICS ==========
+      function renderMetrics(data) {
+        $mUptime.textContent = formatUptime(data.runtime.uptime);
+        $mRss.textContent = data.runtime.memoryUsage.rss;
+        $mHeap.textContent = data.runtime.memoryUsage.heapUsed;
+        $mNode.textContent = data.runtime.nodeVersion;
+        // Queue stats
+        const p = data.queues.persistence, x = data.queues.processing;
+        $qPWait.textContent = `Aguardando: ${p.waiting}`; $qPActive.textContent = `Ativos: ${p.active}`; $qPFailed.textContent = `Falhas: ${p.failed}`;
+        $qXWait.textContent = `Aguardando: ${x.waiting}`; $qXActive.textContent = `Ativos: ${x.active}`; $qXFailed.textContent = `Falhas: ${x.failed}`;
+        $dlqTotal.textContent = (p.failed + x.failed).toLocaleString('pt-BR');
       }
 
       // ========== ERROR STATE ==========
       function renderOffline() {
         setOnline(false);
-
-        // Keep last KPI values but gray them out slightly
-        $feedBody.innerHTML = `
-          <tr>
-            <td colspan="5" class="py-12 text-center text-gray-600 text-sm">
-              <svg class="w-6 h-6 mx-auto mb-2 animate-pulse text-red-400/60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                  d="M18.364 5.636a9 9 0 11-12.728 0M12 9v4m0 4h.01"/>
-              </svg>
-              Aguardando conexão com a API…
-            </td>
-          </tr>`;
+        renderHealthOffline();
+        $feedBody.innerHTML = `<tr><td colspan="5" class="py-12 text-center text-gray-600 text-sm">
+          <svg class="w-6 h-6 mx-auto mb-2 animate-pulse text-red-400/60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 5.636a9 9 0 11-12.728 0M12 9v4m0 4h.01"/></svg>
+          Aguardando conexão com a API…</td></tr>`;
       }
 
       // ========== POLLING LOOP ==========
       async function poll() {
         try {
-          const [stats, alerts] = await Promise.all([fetchStats(), fetchAlerts()]);
+          const [stats, alerts, health, metrics] = await Promise.all([
+            fetchJSON(`${API_BASE}/alerts/stats`),
+            fetchJSON(`${API_BASE}/alerts?limit=10`),
+            fetchJSON(`${API_BASE}/health`).catch(() => null),
+            fetchJSON(`${API_BASE}/admin/metrics`).catch(() => null),
+          ]);
           setOnline(true);
           renderStats(stats);
           renderFeed(alerts);
+          if (health) renderHealth(health);
+          if (metrics) renderMetrics(metrics);
         } catch (err) {
           console.warn('[CIVIC-SYNC] Polling error:', err.message);
           renderOffline();
         }
       }
 
-      // Initial fetch + set interval
       poll();
       setInterval(poll, POLL_INTERVAL);
     })();

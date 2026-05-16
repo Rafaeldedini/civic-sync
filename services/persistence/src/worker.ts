@@ -21,19 +21,27 @@ connection.on('error', (err: Error) => {
 
 // ─── Job Processor ────────────────────────────────────────────────────────────
 
-async function processJob(job: Job<SensorEvent>): Promise<void> {
+async function processJob(job: Job<SensorEvent & { _correlationId?: string }>): Promise<void> {
+  const { _correlationId, ...event } = job.data;
+
   log.info(
-    { jobId: job.id, sensorId: job.data.sensorId, type: job.data.sensorType, attempt: job.attemptsMade + 1 },
+    {
+      jobId: job.id,
+      correlationId: _correlationId,
+      sensorId: event.sensorId,
+      type: event.sensorType,
+      attempt: job.attemptsMade + 1,
+    },
     '📥 Received job',
   );
 
   // If this throws (e.g. Prisma can't reach PostgreSQL), BullMQ will
   // catch the error and schedule a retry based on the job's backoff config.
   // The error is NOT swallowed — it propagates to trigger the retry mechanism.
-  await saveSensorEvent(job.data);
+  await saveSensorEvent(event);
 
   log.info(
-    { jobId: job.id, sensorId: job.data.sensorId },
+    { jobId: job.id, correlationId: _correlationId, sensorId: event.sensorId },
     '✅ Persisted',
   );
 }
@@ -50,9 +58,18 @@ worker.on('completed', (job) => {
 });
 
 worker.on('failed', (job, err) => {
+  const isDeadLetter = job?.attemptsMade === job?.opts?.attempts;
   log.error(
-    { jobId: job?.id, error: err.message, attempt: job?.attemptsMade, maxAttempts: job?.opts?.attempts },
-    '❌ Failed',
+    {
+      jobId: job?.id,
+      error: err.message,
+      attempt: job?.attemptsMade,
+      maxAttempts: job?.opts?.attempts,
+      deadLetter: isDeadLetter,
+    },
+    isDeadLetter
+      ? '🪦 DEAD LETTER — Exhausted all retries, job moved to DLQ'
+      : '❌ Failed',
   );
 });
 

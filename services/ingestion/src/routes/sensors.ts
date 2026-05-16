@@ -37,6 +37,9 @@ export async function sensorRoutes(app: FastifyInstance): Promise<void> {
    * POST /sensors/event
    * Validates the sensor payload and enqueues it for persistence.
    * Returns 202 Accepted with the BullMQ job ID.
+   *
+   * The X-Request-ID (correlation ID) is injected into the job data
+   * so workers can trace the event across the entire pipeline.
    */
   server.post(
     '/sensors/event',
@@ -47,6 +50,7 @@ export async function sensorRoutes(app: FastifyInstance): Promise<void> {
           202: z.object({
             status: z.literal('accepted'),
             jobId: z.string(),
+            correlationId: z.string(),
           }),
           400: z.object({
             statusCode: z.number(),
@@ -58,11 +62,14 @@ export async function sensorRoutes(app: FastifyInstance): Promise<void> {
     },
     async (request, reply) => {
       const event = request.body;
-      const jobId = await publishSensorEvent(event);
+      const correlationId = request.id as string;
+
+      const jobId = await publishSensorEvent(event, correlationId);
 
       return reply.status(202).send({
         status: 'accepted',
         jobId,
+        correlationId,
       });
     },
   );
