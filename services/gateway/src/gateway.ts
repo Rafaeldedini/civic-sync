@@ -171,9 +171,10 @@ export async function buildGateway(): Promise<FastifyInstance> {
         signal: AbortSignal.timeout(5000),
       });
 
-      // Forward response headers (excluding transfer-encoding)
+      // Forward response headers (excluding transfer-encoding, content-encoding, content-length)
       res.headers.forEach((value, key) => {
-        if (key.toLowerCase() !== 'transfer-encoding') {
+        const k = key.toLowerCase();
+        if (k !== 'transfer-encoding' && k !== 'content-encoding' && k !== 'content-length') {
           reply.header(key, value);
         }
       });
@@ -204,7 +205,8 @@ export async function buildGateway(): Promise<FastifyInstance> {
           });
 
           res.headers.forEach((value, key) => {
-            if (key.toLowerCase() !== 'transfer-encoding') {
+            const k = key.toLowerCase();
+            if (k !== 'transfer-encoding' && k !== 'content-encoding' && k !== 'content-length') {
               reply.header(key, value);
             }
           });
