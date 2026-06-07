@@ -1,9 +1,11 @@
 <!DOCTYPE html>
 <html lang="pt-BR" class="dark">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="CIVIC-SYNC — Dashboard de monitoramento de crises e desastres naturais em tempo real." />
+  <meta name="description"
+    content="CIVIC-SYNC — Dashboard de monitoramento de crises e desastres naturais em tempo real." />
   <title>CIVIC-SYNC — Monitoramento Global</title>
 
   <!-- TailwindCSS CDN -->
@@ -16,7 +18,7 @@
           fontFamily: { sans: ['Inter', 'system-ui', 'sans-serif'] },
           colors: {
             brand: {
-              50:  '#f0fdfa',
+              50: '#f0fdfa',
               100: '#ccfbf1',
               200: '#99f6e4',
               300: '#5eead4',
@@ -39,64 +41,158 @@
   <!-- Google Fonts — Inter -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap"
+    rel="stylesheet" />
 
   <style>
     /* ---------- base & scrollbar ---------- */
-    *, *::before, *::after { box-sizing: border-box; }
-    body { font-family: 'Inter', system-ui, sans-serif; background: #0f1117; color: #e5e7eb; }
-    ::-webkit-scrollbar { width: 6px; }
-    ::-webkit-scrollbar-track { background: transparent; }
-    ::-webkit-scrollbar-thumb { background: #374151; border-radius: 9999px; }
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background: #0f1117;
+      color: #e5e7eb;
+    }
+
+    ::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: #374151;
+      border-radius: 9999px;
+    }
 
     /* ---------- custom pulse ring for critical ---------- */
     @keyframes ping-slow {
-      0%   { transform: scale(1);   opacity: .75; }
-      70%  { transform: scale(1.35); opacity: 0; }
-      100% { transform: scale(1.35); opacity: 0; }
+      0% {
+        transform: scale(1);
+        opacity: .75;
+      }
+
+      70% {
+        transform: scale(1.35);
+        opacity: 0;
+      }
+
+      100% {
+        transform: scale(1.35);
+        opacity: 0;
+      }
     }
-    .ping-slow { animation: ping-slow 2s cubic-bezier(0,0,.2,1) infinite; }
+
+    .ping-slow {
+      animation: ping-slow 2s cubic-bezier(0, 0, .2, 1) infinite;
+    }
 
     /* ---------- subtle glow for the doughnut card ---------- */
     .glow-teal {
       box-shadow: 0 0 30px -5px rgba(20, 184, 166, .15),
-                  0 0 60px -10px rgba(20, 184, 166, .08);
+        0 0 60px -10px rgba(20, 184, 166, .08);
     }
 
     /* ---------- table row hover ---------- */
-    .feed-row { transition: background .15s ease; }
-    .feed-row:hover { background: rgba(255,255,255,.04); }
+    .feed-row {
+      transition: background .15s ease;
+    }
+
+    .feed-row:hover {
+      background: rgba(255, 255, 255, .04);
+    }
 
     /* ---------- connection badge ---------- */
     .status-dot {
-      width: 8px; height: 8px; border-radius: 9999px;
-      display: inline-block; margin-right: 6px;
+      width: 8px;
+      height: 8px;
+      border-radius: 9999px;
+      display: inline-block;
+      margin-right: 6px;
       transition: background .3s ease;
     }
-    .status-dot.online  { background: #22c55e; box-shadow: 0 0 6px #22c55e; }
-    .status-dot.offline { background: #ef4444; box-shadow: 0 0 6px #ef4444; }
+
+    .status-dot.online {
+      background: #22c55e;
+      box-shadow: 0 0 6px #22c55e;
+    }
+
+    .status-dot.offline {
+      background: #ef4444;
+      box-shadow: 0 0 6px #ef4444;
+    }
 
     /* ---------- fade-in on load ---------- */
     @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(12px); }
-      to   { opacity: 1; transform: translateY(0); }
+      from {
+        opacity: 0;
+        transform: translateY(12px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
-    .fade-up { animation: fadeUp .5s ease both; }
-    .fade-up-d1 { animation-delay: .08s; }
-    .fade-up-d2 { animation-delay: .16s; }
-    .fade-up-d3 { animation-delay: .24s; }
-    .fade-up-d4 { animation-delay: .32s; }
+
+    .fade-up {
+      animation: fadeUp .5s ease both;
+    }
+
+    .fade-up-d1 {
+      animation-delay: .08s;
+    }
+
+    .fade-up-d2 {
+      animation-delay: .16s;
+    }
+
+    .fade-up-d3 {
+      animation-delay: .24s;
+    }
+
+    .fade-up-d4 {
+      animation-delay: .32s;
+    }
 
     /* ---------- severity badge pill ---------- */
     .badge {
-      display: inline-flex; align-items: center; justify-content: center;
-      font-size: .7rem; font-weight: 700; text-transform: uppercase;
-      letter-spacing: .04em; padding: 2px 10px; border-radius: 9999px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: .7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .04em;
+      padding: 2px 10px;
+      border-radius: 9999px;
     }
-    .badge-normal  { background: rgba(34,197,94,.15);  color: #4ade80; }
-    .badge-atencao { background: rgba(250,204,21,.15);  color: #facc15; }
-    .badge-alerta  { background: rgba(251,146,60,.15);  color: #fb923c; }
-    .badge-critico { background: rgba(239,68,68,.18);   color: #f87171; }
+
+    .badge-normal {
+      background: rgba(34, 197, 94, .15);
+      color: #4ade80;
+    }
+
+    .badge-atencao {
+      background: rgba(250, 204, 21, .15);
+      color: #facc15;
+    }
+
+    .badge-alerta {
+      background: rgba(251, 146, 60, .15);
+      color: #fb923c;
+    }
+
+    .badge-critico {
+      background: rgba(239, 68, 68, .18);
+      color: #f87171;
+    }
   </style>
 </head>
 
@@ -113,9 +209,8 @@
         <div class="relative">
           <svg class="w-9 h-9 text-brand-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.6">
             <path stroke-linecap="round" stroke-linejoin="round"
-              d="M12 2l7.5 4.5v5.25c0 4.68-3.15 9.04-7.5 10.25-4.35-1.21-7.5-5.57-7.5-10.25V6.5L12 2z"/>
-            <path stroke-linecap="round" stroke-linejoin="round"
-              d="M12 8v4m0 2h.01"/>
+              d="M12 2l7.5 4.5v5.25c0 4.68-3.15 9.04-7.5 10.25-4.35-1.21-7.5-5.57-7.5-10.25V6.5L12 2z" />
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4m0 2h.01" />
           </svg>
           <span class="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-brand-400 ping-slow"></span>
         </div>
@@ -141,18 +236,22 @@
     <!-- ===== KPI CARDS ===== -->
     <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
       <!-- Total Leituras -->
-      <div id="kpi-total" class="fade-up relative overflow-hidden rounded-2xl bg-gray-800/60 border border-white/5 p-6 group hover:border-brand-500/30 transition-colors">
+      <div id="kpi-total"
+        class="fade-up relative overflow-hidden rounded-2xl bg-gray-800/60 border border-white/5 p-6 group hover:border-brand-500/30 transition-colors">
         <div class="absolute inset-0 bg-gradient-to-br from-brand-500/5 to-transparent pointer-events-none"></div>
         <p class="text-[.7rem] font-semibold text-gray-400 uppercase tracking-wider mb-1">Leituras Processadas</p>
         <p id="val-total" class="text-3xl font-extrabold text-brand-400 tabular-nums">—</p>
         <div class="mt-3 flex items-center gap-1.5 text-[.65rem] text-gray-500">
-          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+          </svg>
           Tempo real
         </div>
       </div>
 
       <!-- Críticos -->
-      <div id="kpi-critico" class="fade-up fade-up-d1 relative overflow-hidden rounded-2xl bg-gray-800/60 border border-white/5 p-6 group hover:border-red-500/30 transition-colors">
+      <div id="kpi-critico"
+        class="fade-up fade-up-d1 relative overflow-hidden rounded-2xl bg-gray-800/60 border border-white/5 p-6 group hover:border-red-500/30 transition-colors">
         <div class="absolute inset-0 bg-gradient-to-br from-red-500/5 to-transparent pointer-events-none"></div>
         <p class="text-[.7rem] font-semibold text-gray-400 uppercase tracking-wider mb-1">Estado Crítico</p>
         <div class="flex items-center gap-2">
@@ -163,29 +262,39 @@
           </span>
         </div>
         <div class="mt-3 flex items-center gap-1.5 text-[.65rem] text-gray-500">
-          <svg class="w-3.5 h-3.5 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+          <svg class="w-3.5 h-3.5 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
           Ação imediata
         </div>
       </div>
 
       <!-- Alerta -->
-      <div class="fade-up fade-up-d2 relative overflow-hidden rounded-2xl bg-gray-800/60 border border-white/5 p-6 group hover:border-orange-500/30 transition-colors">
+      <div
+        class="fade-up fade-up-d2 relative overflow-hidden rounded-2xl bg-gray-800/60 border border-white/5 p-6 group hover:border-orange-500/30 transition-colors">
         <div class="absolute inset-0 bg-gradient-to-br from-orange-500/5 to-transparent pointer-events-none"></div>
         <p class="text-[.7rem] font-semibold text-gray-400 uppercase tracking-wider mb-1">Em Alerta</p>
         <p id="val-alerta" class="text-3xl font-extrabold text-orange-400 tabular-nums">—</p>
         <div class="mt-3 flex items-center gap-1.5 text-[.65rem] text-gray-500">
-          <svg class="w-3.5 h-3.5 text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01"/></svg>
+          <svg class="w-3.5 h-3.5 text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01" />
+          </svg>
           Monitorar
         </div>
       </div>
 
       <!-- Atenção -->
-      <div class="fade-up fade-up-d3 relative overflow-hidden rounded-2xl bg-gray-800/60 border border-white/5 p-6 group hover:border-yellow-500/30 transition-colors">
+      <div
+        class="fade-up fade-up-d3 relative overflow-hidden rounded-2xl bg-gray-800/60 border border-white/5 p-6 group hover:border-yellow-500/30 transition-colors">
         <div class="absolute inset-0 bg-gradient-to-br from-yellow-500/5 to-transparent pointer-events-none"></div>
         <p class="text-[.7rem] font-semibold text-gray-400 uppercase tracking-wider mb-1">Atenção</p>
         <p id="val-atencao" class="text-3xl font-extrabold text-yellow-400 tabular-nums">—</p>
         <div class="mt-3 flex items-center gap-1.5 text-[.65rem] text-gray-500">
-          <svg class="w-3.5 h-3.5 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+          <svg class="w-3.5 h-3.5 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M15 12H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
           Observação
         </div>
       </div>
@@ -197,7 +306,12 @@
       <!-- Doughnut Chart -->
       <div class="fade-up fade-up-d3 lg:col-span-2 rounded-2xl bg-gray-800/60 border border-white/5 p-6 glow-teal">
         <h2 class="text-sm font-bold text-gray-300 mb-5 flex items-center gap-2">
-          <svg class="w-4 h-4 text-brand-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z"/></svg>
+          <svg class="w-4 h-4 text-brand-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z" />
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z" />
+          </svg>
           Distribuição por Severidade
         </h2>
         <div class="relative flex items-center justify-center" style="max-height:320px;">
@@ -253,7 +367,10 @@
       <!-- Circuit Breaker Semaphore -->
       <div class="rounded-2xl bg-gray-800/60 border border-white/5 p-6">
         <h2 class="text-sm font-bold text-gray-300 mb-4 flex items-center gap-2">
-          <svg class="w-4 h-4 text-brand-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+          <svg class="w-4 h-4 text-brand-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+          </svg>
           Saúde do Sistema
         </h2>
         <div id="health-semaphore" class="space-y-3">
@@ -279,7 +396,10 @@
       <!-- Alta Disponibilidade (HA) -->
       <div class="rounded-2xl bg-gray-800/60 border border-white/5 p-6">
         <h2 class="text-sm font-bold text-gray-300 mb-4 flex items-center gap-2">
-          <svg class="w-4 h-4 text-brand-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4"/></svg>
+          <svg class="w-4 h-4 text-brand-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4" />
+          </svg>
           Redundância (HA)
         </h2>
         <div class="space-y-3">
@@ -301,21 +421,31 @@
       <!-- Runtime Metrics -->
       <div class="rounded-2xl bg-gray-800/60 border border-white/5 p-6">
         <h2 class="text-sm font-bold text-gray-300 mb-4 flex items-center gap-2">
-          <svg class="w-4 h-4 text-brand-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+          <svg class="w-4 h-4 text-brand-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+          </svg>
           Métricas de Runtime
         </h2>
         <div class="space-y-3 text-xs">
-          <div class="flex justify-between"><span class="text-gray-400">Uptime</span><span id="m-uptime" class="text-gray-200 font-mono">—</span></div>
-          <div class="flex justify-between"><span class="text-gray-400">Memória (RSS)</span><span id="m-rss" class="text-gray-200 font-mono">—</span></div>
-          <div class="flex justify-between"><span class="text-gray-400">Heap Usado</span><span id="m-heap" class="text-gray-200 font-mono">—</span></div>
-          <div class="flex justify-between"><span class="text-gray-400">Node.js</span><span id="m-node" class="text-gray-200 font-mono">—</span></div>
+          <div class="flex justify-between"><span class="text-gray-400">Uptime</span><span id="m-uptime"
+              class="text-gray-200 font-mono">—</span></div>
+          <div class="flex justify-between"><span class="text-gray-400">Memória (RSS)</span><span id="m-rss"
+              class="text-gray-200 font-mono">—</span></div>
+          <div class="flex justify-between"><span class="text-gray-400">Heap Usado</span><span id="m-heap"
+              class="text-gray-200 font-mono">—</span></div>
+          <div class="flex justify-between"><span class="text-gray-400">Node.js</span><span id="m-node"
+              class="text-gray-200 font-mono">—</span></div>
         </div>
       </div>
 
       <!-- Queue Metrics + DLQ -->
       <div class="rounded-2xl bg-gray-800/60 border border-white/5 p-6">
         <h2 class="text-sm font-bold text-gray-300 mb-4 flex items-center gap-2">
-          <svg class="w-4 h-4 text-brand-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
+          <svg class="w-4 h-4 text-brand-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+          </svg>
           Filas BullMQ
         </h2>
         <div class="space-y-2 text-xs">
@@ -355,63 +485,63 @@
       'use strict';
 
       // ========== CONFIG ==========
-      const API_BASE      = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+      const API_BASE = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
         ? 'http://localhost:3000'
-        : 'GATEWAY_URL_PLACEHOLDER';
+        : 'https://civic-sync-production-2061.up.railway.app';
       const POLL_INTERVAL = 2000; // ms
 
       // ========== DOM REFS ==========
-      const $totalVal     = document.getElementById('val-total');
-      const $criticoVal   = document.getElementById('val-critico');
-      const $alertaVal    = document.getElementById('val-alerta');
-      const $atencaoVal   = document.getElementById('val-atencao');
+      const $totalVal = document.getElementById('val-total');
+      const $criticoVal = document.getElementById('val-critico');
+      const $alertaVal = document.getElementById('val-alerta');
+      const $atencaoVal = document.getElementById('val-atencao');
       const $criticoPulse = document.getElementById('critico-pulse');
-      const $feedBody     = document.getElementById('feed-body');
-      const $connDot      = document.getElementById('conn-dot');
-      const $connText     = document.getElementById('conn-text');
-      const $chartCenter  = document.getElementById('chart-center-val');
+      const $feedBody = document.getElementById('feed-body');
+      const $connDot = document.getElementById('conn-dot');
+      const $connText = document.getElementById('conn-text');
+      const $chartCenter = document.getElementById('chart-center-val');
       // Health panel refs
-      const $healthPg     = document.getElementById('health-pg');
-      const $healthRedis  = document.getElementById('health-redis');
-      const $healthApi    = document.getElementById('health-api');
+      const $healthPg = document.getElementById('health-pg');
+      const $healthRedis = document.getElementById('health-redis');
+      const $healthApi = document.getElementById('health-api');
       const $circuitLight = document.getElementById('circuit-light');
       const $circuitLabel = document.getElementById('circuit-label');
       // HA panel refs
-      const $haServerA    = document.getElementById('ha-server-a');
-      const $haServerB    = document.getElementById('ha-server-b');
+      const $haServerA = document.getElementById('ha-server-a');
+      const $haServerB = document.getElementById('ha-server-b');
       const $haActiveInstance = document.getElementById('ha-active-instance');
       // Metrics refs
       const $mUptime = document.getElementById('m-uptime');
-      const $mRss    = document.getElementById('m-rss');
-      const $mHeap   = document.getElementById('m-heap');
-      const $mNode   = document.getElementById('m-node');
+      const $mRss = document.getElementById('m-rss');
+      const $mHeap = document.getElementById('m-heap');
+      const $mNode = document.getElementById('m-node');
       // Queue refs
-      const $qPWait   = document.getElementById('q-p-wait');
+      const $qPWait = document.getElementById('q-p-wait');
       const $qPActive = document.getElementById('q-p-active');
       const $qPFailed = document.getElementById('q-p-failed');
-      const $qXWait   = document.getElementById('q-x-wait');
+      const $qXWait = document.getElementById('q-x-wait');
       const $qXActive = document.getElementById('q-x-active');
       const $qXFailed = document.getElementById('q-x-failed');
-      const $dlqTotal  = document.getElementById('dlq-total');
+      const $dlqTotal = document.getElementById('dlq-total');
 
       // ========== SEVERITY HELPERS ==========
       const SEVERITY_COLORS = {
-        normal:  { bg: 'rgba(34,197,94,.65)',  border: '#22c55e' },
+        normal: { bg: 'rgba(34,197,94,.65)', border: '#22c55e' },
         atencao: { bg: 'rgba(250,204,21,.65)', border: '#facc15' },
-        alerta:  { bg: 'rgba(251,146,60,.65)', border: '#fb923c' },
-        critico: { bg: 'rgba(239,68,68,.70)',  border: '#ef4444' },
+        alerta: { bg: 'rgba(251,146,60,.65)', border: '#fb923c' },
+        critico: { bg: 'rgba(239,68,68,.70)', border: '#ef4444' },
       };
 
       const SEVERITY_LABELS = {
-        normal:  'Normal',
+        normal: 'Normal',
         atencao: 'Atenção',
-        alerta:  'Alerta',
+        alerta: 'Alerta',
         critico: 'Crítico',
       };
 
       const SENSOR_LABELS = {
-        nivel_rio:            'Nível do Rio',
-        umidade_solo:         'Umidade do Solo',
+        nivel_rio: 'Nível do Rio',
+        umidade_solo: 'Umidade do Solo',
         deslocamento_encosta: 'Desloc. Encosta',
         temperatura_floresta: 'Temp. Floresta',
       };
@@ -424,9 +554,9 @@
 
       function rowAccentClass(sev) {
         const map = {
-          normal:  'text-green-400',
+          normal: 'text-green-400',
           atencao: 'text-yellow-400',
-          alerta:  'text-orange-400',
+          alerta: 'text-orange-400',
           critico: 'text-red-400 font-bold',
         };
         return map[sev] || 'text-gray-400';
@@ -460,8 +590,8 @@
         labels: ['Normal', 'Atenção', 'Alerta', 'Crítico'],
         datasets: [{
           data: [0, 0, 0, 0],
-          backgroundColor: [ SEVERITY_COLORS.normal.bg, SEVERITY_COLORS.atencao.bg, SEVERITY_COLORS.alerta.bg, SEVERITY_COLORS.critico.bg ],
-          borderColor: [ SEVERITY_COLORS.normal.border, SEVERITY_COLORS.atencao.border, SEVERITY_COLORS.alerta.border, SEVERITY_COLORS.critico.border ],
+          backgroundColor: [SEVERITY_COLORS.normal.bg, SEVERITY_COLORS.atencao.bg, SEVERITY_COLORS.alerta.bg, SEVERITY_COLORS.critico.bg],
+          borderColor: [SEVERITY_COLORS.normal.border, SEVERITY_COLORS.atencao.border, SEVERITY_COLORS.alerta.border, SEVERITY_COLORS.critico.border],
           borderWidth: 2, hoverBorderWidth: 3, spacing: 4, borderRadius: 6,
         }],
       };
@@ -474,7 +604,7 @@
             tooltip: {
               backgroundColor: '#1f2937', titleColor: '#f9fafb', bodyColor: '#d1d5db', borderColor: 'rgba(255,255,255,.08)', borderWidth: 1, padding: 12, cornerRadius: 10,
               titleFont: { family: 'Inter', weight: '700', size: 13 }, bodyFont: { family: 'Inter', size: 12 },
-              callbacks: { label: function(ctx) { const t = ctx.dataset.data.reduce((a,b) => a+b, 0); const p = t ? ((ctx.parsed/t)*100).toFixed(1) : 0; return ` ${ctx.label}: ${ctx.parsed.toLocaleString('pt-BR')} (${p}%)`; } },
+              callbacks: { label: function (ctx) { const t = ctx.dataset.data.reduce((a, b) => a + b, 0); const p = t ? ((ctx.parsed / t) * 100).toFixed(1) : 0; return ` ${ctx.label}: ${ctx.parsed.toLocaleString('pt-BR')} (${p}%)`; } },
             },
           },
           animation: { animateRotate: true, animateScale: false, duration: 600, easing: 'easeOutQuart' },
@@ -566,7 +696,7 @@
           $haServerB.textContent = serverB.healthy ? 'Online' : 'Offline';
           $haServerB.className = serverB.healthy ? 'badge badge-normal' : 'badge badge-critico';
         }
-        
+
         if (status.activeInstance === 'none') {
           $haActiveInstance.textContent = 'Nenhuma';
           $haActiveInstance.className = 'font-bold text-red-400';
@@ -649,4 +779,5 @@
     })();
   </script>
 </body>
+
 </html>
