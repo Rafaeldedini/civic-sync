@@ -7,6 +7,8 @@ dist/
 # Variáveis de ambiente (nunca subir!)
 .env
 **/.env
+.env.production
+**/.env.production
 
 # macOS
 .DS_Store

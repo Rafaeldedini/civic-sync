@@ -10,7 +10,7 @@
 
 // ─── Config ───────────────────────────────────────────────────────────────────
 
-const INGESTION_URL = process.env.INGESTION_URL ?? 'http://localhost:3001';
+const INGESTION_URL = process.env.INGESTION_URL ?? 'http://localhost:3000';
 const INTERVAL_MS = 1000;
 const CRISIS_MODE = process.argv.includes('--crisis');
 
@@ -159,7 +159,7 @@ const interval = setInterval(async () => {
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
     console.error(`${RED}[Mock] ❌ #${count} Fetch error: ${message}${RESET}`);
-    console.error(`${YELLOW}[Mock] Is the ingestion service running? (npm run dev:ingestion)${RESET}`);
+    console.error(`${YELLOW}[Mock] Is the gateway or ingestion service running? (npm run dev:ha or npm run dev:gateway)${RESET}`);
   }
 }, INTERVAL_MS);
 

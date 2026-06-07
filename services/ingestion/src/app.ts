@@ -12,7 +12,7 @@ import { sensorRoutes } from './routes/sensors.js';
 import { alertRoutes } from './routes/alerts.js';
 import { adminRoutes } from './routes/admin.js';
 
-export async function buildApp(): ReturnType<typeof Fastify> {
+export async function buildApp(): Promise<ReturnType<typeof Fastify>> {
   const app = Fastify({
     logger: {
       level: process.env.LOG_LEVEL ?? 'info',
@@ -85,6 +85,7 @@ export async function buildApp(): ReturnType<typeof Fastify> {
     const health: Record<string, unknown> = {
       status: 'ok',
       service: 'ingestion',
+      instanceId: process.env.INSTANCE_ID ?? 'default',
       uptime: process.uptime(),
       timestamp: new Date().toISOString(),
       dependencies: {} as Record<string, unknown>,
