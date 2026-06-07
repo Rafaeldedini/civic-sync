@@ -25,7 +25,8 @@
     "mock:crisis": "npx tsx scripts/mock-sensor.ts --crisis",
     "db:migrate": "npm run db:migrate  --workspace=shared/database",
     "db:generate": "npm run db:generate --workspace=shared/database",
-    "db:studio": "npm run db:studio   --workspace=shared/database"
+    "db:studio": "npm run db:studio   --workspace=shared/database",
+    "build": "npm run db:generate"
   },
   "devDependencies": {
     "@types/node": "^22.0.0",
